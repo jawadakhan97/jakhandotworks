@@ -11,12 +11,13 @@ body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    padding: 2em 4em; /* spacing inside page edges */
+    padding: 2em 2em;  /* spacing inside page edges */
 }
 
 /* Allow main to grow for sticky footer */
 main {
-    flex: 1;
+    flex: 1;           /* keeps footer behaviour */
+    max-width: 1000px; /* prevents over-wide layout */
 }
 
 /* Vertical spacing (i.e. vertical rhythm) */
@@ -38,4 +39,14 @@ h1 .subtitle {
   font-weight: normal; /* lighter than h1 */
   color: #555;         /* optional color */
   margin-top: 0.2em;   /* spacing below main title */
+}
+
+.game-entry {
+  display: flex;
+  gap: 1em;            /* space between columns */
+  align-items: flex-start;
+}
+
+.column {
+  flex: 1;             /* equal width columns */
 }
