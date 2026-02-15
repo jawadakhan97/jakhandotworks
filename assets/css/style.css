@@ -31,3 +31,11 @@ img {
     max-width: 100%;
     height: auto;
 }
+
+h1 .subtitle {
+  display: block;      /* forces subtitle on its own line */
+  font-size: 0.5em;    /* smaller than main heading */
+  font-weight: normal; /* lighter than h1 */
+  color: #555;         /* optional color */
+  margin-top: 0.2em;   /* spacing below main title */
+}
