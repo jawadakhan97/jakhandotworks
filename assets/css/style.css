@@ -51,6 +51,14 @@ h1 .subtitle {
   flex: 1;             /* equal width columns */
 }
 
+h2 .subtitle {
+  display: block;
+  font-size: 0.75em;
+  font-weight: normal;
+  color: #555;
+  margin-top: 0.2em;
+}
+
 h3 .subtitle {
   display: block;
   font-size: 0.75em;
@@ -63,4 +71,10 @@ h3 .subtitle {
 /* Change indentation for lists */
 ul, ol {
   padding-inline-start: 25px;
+}
+
+p.poem {
+  margin: 0 0 1.5em 0;
+  padding-left: 0.5em;
+  text-indent: -0.5em;
 }
