@@ -88,6 +88,24 @@ h3 .subtitle {
   margin-top: 0.2em;
 }
 
+h4 .subtitle {
+  display: block;
+  font-size: 1em;
+  font-weight: normal;
+  font-style: italic;
+  color: #555;
+  margin-top: -1em;
+}
+
+h4 .author {
+  display: block;
+  font-size: 1em;
+  font-weight: bold;
+  color: #666;
+  margin-top: -0.5em;
+  margin-bottom: -1em;
+}
+
 /* Change indentation for lists */
 ul, ol {
   padding-inline-start: 25px;
@@ -112,3 +130,56 @@ p.note {
     flex-direction: column;
   }
 } 
+
+/* Timeline, initially for Research Log */
+.timeline {
+  font-size: 0.85em;
+  color: #666;
+  display: block;
+  position: relative;
+  margin-top: 2em;
+  margin-bottom: 0.25em;
+  padding-left: 3em; /* space for line + dots */
+  border-left: 2px solid #ccc; /* vertical line */
+}
+
+.timeline h3 {
+  margin: 0.25em 0 0.4em 0;
+}
+
+.timeline p {
+  margin: 0;
+  max-width: 65ch;
+}
+
+.timeline-item {
+  position: relative;
+  margin-bottom: 2em;
+}
+
+.timeline-item::before {
+  content: "";
+  position: absolute;
+  left: -3em; /* aligns with line */
+  top: 0.5em;
+  width: 2em;
+  height: 2px;
+  background: #ccc;
+}
+
+.timeline-item::after {
+  content: "";
+  position: absolute;
+  left: -1.1em;
+  top: 0.3em;
+  width: 0.6em;
+  height: 0.6em;
+  background: #666;
+  border-radius: 50%;
+}
+
+.timeline-date {
+  display: block;
+  margin-bottom: 0.3em;
+  position: relative;
+}
