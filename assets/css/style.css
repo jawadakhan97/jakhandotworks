@@ -11,13 +11,13 @@ body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    padding: 2em 2em;  /* spacing inside page edges */
+    padding: 2em 2em;        /* spacing inside page edges */
 }
 
 /* Allow main to grow for sticky footer */
 main {
-    flex: 1;           /* keeps footer behaviour */
-    max-width: 1000px; /* prevents over-wide layout */
+    flex: 1;                 /* keeps footer behaviour */
+    max-width: 1000px;       /* prevents over-wide layout */
 }
 
 /* Vertical spacing (i.e. vertical rhythm) */
@@ -48,21 +48,21 @@ img {
 }
 
 h1 .subtitle {
-  display: block;      /* forces subtitle on its own line */
-  font-size: 0.5em;    /* smaller than main heading */
-  font-weight: normal; /* lighter than h1 */
-  color: #555;         /* optional color */
-  margin-top: 0.2em;   /* spacing below main title */
+  display: block;             /* forces subtitle on its own line */
+  font-size: 0.5em;           /* smaller than main heading */
+  font-weight: normal;        /* lighter than h1 */
+  color: #555;                /* optional color */
+  margin-top: 0.2em;          /* spacing below main title */
 }
 
 .game-entry {
   display: flex;
-  gap: 1em;            /* space between columns */
+  gap: 1em;                   /* space between columns */
   align-items: flex-start;
 }
 
 .column {
-  flex: 1;             /* equal width columns */
+  flex: 1;                    /* equal width columns */
 }
 
 /* ratio presets for columns */
@@ -139,7 +139,7 @@ p.note {
   position: relative;
   margin-top: 2em;
   margin-bottom: 0.25em;
-  padding-left: 3em; /* space for line + dots */
+  padding-left: 3em;           /* space for line + dots */
   border-left: 2px solid #ccc; /* vertical line */
 }
 
@@ -160,7 +160,7 @@ p.note {
 .timeline-item::before {
   content: "";
   position: absolute;
-  left: -3em; /* aligns with line */
+  left: -3em;                  /* aligns with line */
   top: 0.5em;
   width: 2em;
   height: 2px;
@@ -182,4 +182,77 @@ p.note {
   display: block;
   margin-bottom: 0.3em;
   position: relative;
+}
+
+/* Tags and keywords */
+.tags {
+  display: flex;
+  flex-wrap: wrap;             /* allows multiple lines of tags */
+  gap: 0.5em;                  /* spacing between tags */
+  margin-top: 0.5em;           /* space above tags */ 
+  margin-bottom: 0.5em;
+}
+
+.tag {
+  display: inline-block;
+  padding: 0.25em 0.6em;       /* vertical and horizontal padding */
+  border: 1px solid #666;      /* thin outline; adjust colour */
+  border-radius: 0.5em;        /* mild rounding */
+  font-size: 0.8em;            /* smaller than body text */
+  text-transform: uppercase;   /* small caps effect */
+  color: #333;                 /* text color */
+  background: transparent;     /* keeps it minimal */
+  line-height: 1.2;
+  white-space: nowrap;         /* prevents breaking inside tag */
+}
+
+.project-entry {
+  margin-bottom: 0em;      /* spacing between projects */
+  margin-top: 2em;
+}
+
+.project-entry .title {
+  margin: 0;
+  font-size: 1.25em;
+}
+
+.project-entry .subtitle {
+  display: block;
+  font-size: 0.8em;
+  font-style: italic;
+  color: #555;
+  margin-top: 0.2em;
+}
+
+.project-entry .tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5em;
+  margin: 0.5em 0;         /* vertical spacing between subtitle and byline */
+}
+
+.project-entry .tag {
+  display: inline-block;
+  padding: 0.25em 0.6em;
+  border: 1px solid #666;
+  border-radius: 0.5em;
+  font-size: 0.8em;
+  text-transform: uppercase;
+  color: #333;
+  background: transparent;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.project-entry .byline {
+  font-size: 1em;
+  color: #000;
+  margin: 0;
+  font-style: italic;
+}
+
+.project-entry .body {
+  font-size: 1em;
+  margin-top: 1em;
+  margin-bottom: 0em;
 }
