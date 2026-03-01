@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Portfolio of Jawad A. Khan. Projects exploring narrative, art, and more.">
     <title>Jawad | Portfolio</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -17,8 +18,8 @@
         Jawad A. Khan
         <span class="subtitle">Narrative Designer</span>
       </h1>
-      <nav>
-        <a href="/">Home</a> |
+      <nav class="navbar">
+        <a href="/">Home</a> | 
         <a href="/about">About</a> |
         <a href="/works">Works</a> |
         <a href="/research-log">Research Log</a>
@@ -96,7 +97,18 @@
 
         <div class="column col-2-3">
           <h4>Character & Event Map</h4>
-          <img src="../assets/images/crab-cannery-ship-character-and-event-map-web.webp" alt="flow chart of characters and events in the crab cannery ship project">
+          <img
+            src="assets/images/crab-600.webp"
+            srcset="
+              assets/images/crab-600.webp 600w,
+              assets/images/crab-1200.webp 1200w
+            "
+            sizes="(max-width: 600px) 100vw, 581px"
+            width="581"
+            height="456"
+            fetchpriority="high"
+            alt="flow chart of characters and events in the crab cannery ship project"
+          >
         </div>
       </section>
     

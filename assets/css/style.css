@@ -5,6 +5,46 @@ html, body {
     box-sizing: border-box;
 }
 
+.navbar a {
+  position: relative;
+  display: inline-block;
+  line-height: 44px;
+  text-decoration: none;
+  color: #0070f3;
+  transition: color 0.2s;
+}
+
+.navbar a::before {
+  content: "";
+  position: absolute;
+  top: -8px;
+  bottom: -8px;
+  left: -8px;
+  right: -8px;
+}
+
+.navbar a:hover {
+  color: #0051a8;
+}
+
+.navbar a:focus {
+  color: #0051a8;
+  outline: 2px solid #0051a8;
+  outline-offset: 2px;
+}
+
+a {
+  text-decoration: none;
+  color: #0070f3;
+  transition: color 0.2s;
+}
+
+a:hover,
+a:focus {
+  color: #0051a8;
+  text-decoration: underline;
+}
+
 /* Body layout */
 body {
     font-family: 'Montserrat', sans-serif;
@@ -21,10 +61,19 @@ main {
 }
 
 /* Vertical spacing (i.e. vertical rhythm) */
-h1 { margin: 0 0 0.5em 0; }
+h1 {
+  margin: 0 0 0 0;
+  line-height: 1.2;
+}
+
 h2 { margin: 2em 0 0.5em 0; }
 h3 { margin: 1.5em 0 0.5em 0; }
 p  { margin: 0 0 1em 0; }
+
+main h2 {
+  margin-top: 1em;
+  margin-botom: 0.5em;
+}
 
 /* Images responsive */
 img {
@@ -52,7 +101,7 @@ h1 .subtitle {
   font-size: 0.5em;           /* smaller than main heading */
   font-weight: normal;        /* lighter than h1 */
   color: #555;                /* optional color */
-  margin-top: 0.2em;          /* spacing below main title */
+  margin-top: 0.1em 0 0 0;          /* spacing below main title */
 }
 
 .game-entry {
