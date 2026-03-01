@@ -5,6 +5,10 @@ html, body {
     box-sizing: border-box;
 }
 
+body {
+  font-family: "Montserrat", system-ui, sans-serif;
+}
+
 .navbar a {
   position: relative;
   display: inline-block;
@@ -304,4 +308,20 @@ p.note {
   font-size: 1em;
   margin-top: 1em;
   margin-bottom: 0em;
+}
+
+@font-face {
+  font-family: "Montserrat";
+  src: url("/assets/fonts/Montserrat-VariableFont_wght.ttf") format("truetype");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Montserrat";
+  src: url("/assets/fonts/Montserrat-Italic-VariableFont_wght.ttf") format("truetype");
+  font-weight: 100 900;
+  font-style: italic;
+  font-display: swap;
 }
