@@ -337,7 +337,7 @@ p.note {
 
 @font-face {
   font-family: "Montserrat";
-  src: url("/assets/fonts/Montserrat-VariableFont_wght.ttf") format("truetype");
+  src: url("/assets/fonts/Montserrat-VariableFont_wght.woff2") format("woff2");
   font-weight: 100 900;
   font-style: normal;
   font-display: swap;
@@ -345,7 +345,7 @@ p.note {
 
 @font-face {
   font-family: "Montserrat";
-  src: url("/assets/fonts/Montserrat-Italic-VariableFont_wght.ttf") format("truetype");
+  src: url("/assets/fonts/Montserrat-Italic-VariableFont_wght.woff2") format("woff2");
   font-weight: 100 900;
   font-style: italic;
   font-display: swap;
