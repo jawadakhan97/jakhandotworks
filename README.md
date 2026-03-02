@@ -8,3 +8,8 @@ Use this command for automatic refresh:
 livereload .
 ```
 Need to install python virtual env with ```python3 -m venv venv```, and ```pip install livereload .```
+
+The following command minifies the css:
+```
+npx clean-css-cli assets/css/style.css -o assets/css/style.min.css
+```
