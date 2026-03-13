@@ -27,8 +27,60 @@
 
     <main>
       <h2>Devlog | Crab Cannery Ship</h2>
-      <h3>DATE</h3>
-        <p>CONTENT</p>
+      <h3>2026-03-12</h3>
+        <p>Currently, in Godot 4.6, Dialogic 2 basic functionality is working. Below is a list of what is currently implemented:</p>
+        <ul>
+          <li>start screen</li>
+          <li>start game button</li>
+          <li>quit button</li>
+          <li>options button (does nothing)</li>
+        </ul>
+        <p>The current components in the game include:</p>
+        <ul>
+          <li>player</li>
+          <li>npc</li> 
+          <li>interaction_area</li>
+            <ul>
+              <li>inherited by player, npc, and env interactable</li>
+            </ul>
+          <li>env_interactable</li>
+        </ul>
+
+        <p>Some problems:</p>
+        <ul>
+          <li>How to determine, when two interactables are within range (equal range?) which is interacted with?</li>
+          <ul>
+            <li>In a 3D game presumably there’d be a raycast from screen space, camera, or where the player character is facing</li>
+            <li>Perhaps I can implement it with the direction of the player character in 2D?</li>
+            <li>Currently have it done through `get_closest()` function in interaction_area</li>
+            <ul>
+              <li>Seems to work fine</li>
+            </ul>
+            <li>Player can repeatedly press the interact key to restart the current dialogue</li>
+          </ul>
+          <li>There is no state tracking, the same dialogue can occur over and over again</li>
+          <ul>
+            <li>There isn’t any indication an option has been selected prior</li>
+          </ul>
+        </ul>
+
+        <li>Things to implement:</li>
+        <ul>
+          <li>State tracking</li>
+          <ul>
+            <li>There is a global script, game_data which is autoloaded</li>
+          </ul>
+          <li>Barks</li>
+          <ul>
+            <li>When within range, a bark will be automatically played… probably need to use labels for each character timeline “bark-1” or something which triggers on entering a body area or interaction area</li>
+            <ul>
+              <li>Could implement a disco elysium style ring with tidbits of info</li>
+              <li>Would need to change the area/body erase distance, to keep it in the ring when the point of interest is walked away from…</li>
+              <ul>
+                <li>Is that necessary?</li>
+              </ul>
+            </ul>
+           </ul>
     </main>
 
     <footer>
