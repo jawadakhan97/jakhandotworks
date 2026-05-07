@@ -47,8 +47,9 @@ a:focus {
 
 a.play {
   display: flex;
+  margin-top: 0.25em;
   margin-left: 0em;      /* space after sentence */
-  margin-bottom: 1em;
+  margin-bottom: 0em;
   padding: 0.25em 0.5em;
   border: 1px solid #666;
   border-radius: 0.5em;
