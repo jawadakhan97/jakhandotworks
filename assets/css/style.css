@@ -69,6 +69,11 @@ a.play:hover {
   color: #fff;
 }
 
+a.play.big {
+	width: 144px;
+	height: 36px;
+}
+
 
 /* Body layout */
 body {
@@ -334,4 +339,14 @@ p.note {
   font-size: 1em;
   margin-top: 1em;
   margin-bottom: 0em;
+}
+
+.project-entry.recent {
+	border: 1px solid #666;
+	border-radius: 8px;
+	padding: 1em;
+	margin-top: 2em;
+	max-width: 600px;
+	/* margin-left: auto;
+	margin-right: auto; */
 }
