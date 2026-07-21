@@ -1,72 +1,77 @@
 /* Reset browser defaults */
 html, body {
-    margin: 0em 0.25em;
-    height: 100%;
-    box-sizing: border-box;
+	margin: 0em 0.25em;
+	height: 100%;
+	box-sizing: border-box;
 }
 
 .navbar a {
-  position: relative;
-  display: inline-block;
-  line-height: 44px;
-  text-decoration: none;
-  color: #0070f3;
-  transition: color 0.2s;
+	position: relative;
+	display: inline-block;
+	line-height: 44px;
+	text-decoration: none;
+	color: #0070f3;
+	transition: color 0.2s;
 }
 
 .navbar a::before {
-  content: "";
-  position: absolute;
-  top: -8px;
-  bottom: -8px;
-  left: -8px;
-  right: -8px;
+	content: "";
+	position: absolute;
+	top: -8px;
+	bottom: -8px;
+	left: -8px;
+	right: -8px;
 }
 
 .navbar a:hover {
-  color: #0051a8;
+	color: #0051a8;
 }
 
 .navbar a:focus {
-  color: #0051a8;
-  outline: 2px solid #0051a8;
-  outline-offset: 2px;
+	color: #0051a8;
+	outline: 2px solid #0051a8;
+	outline-offset: 2px;
 }
 
+header {
+	border-bottom: 4px solid;
+}	
+
 a {
-  text-decoration: none;
-  color: #0070f3;
-  transition: color 0.2s;
+	text-decoration: none;
+	color: #0070f3;
+	transition: color 0.2s;
 }
 
 a:hover,
 a:focus {
-  color: #0051a8;
-  text-decoration: underline;
+	color: #0051a8;
+	text-decoration: underline;
 }
 
 a.play {
-  display: flex;
-  margin-top: 0.25em;
-  margin-left: 0em;      /* space after sentence */
-  margin-bottom: 0em;
-  padding: 0.25em 0.5em;
-  border: 1px solid #666;
-  border-radius: 0.5em;
-  font-size: 0.8em;
-  text-transform: uppercase;
-  line-height: 1.4;
-  color: #333;
-  text-decoration: none;
-  width: 72px;
-  height: 24px;
-  align-items: center;
-  justify-content: center;
+	display: flex;
+	margin-top: 0.25em;
+	margin-left: 0em;      /* space after sentence */
+	margin-bottom: 0.75em;
+	padding: 0.25em 0.5em;
+	border: 1px solid #666;
+	border-radius: 0.5em;
+	gap: 15px;
+	font-size: 0.8em;
+	text-transform: uppercase;
+	line-height: 1.4;
+	color: #333;
+	text-decoration: none;
+	width: 72px;
+	height: 24px;
+	align-items: center;
+	justify-content: center;
 }
 
 a.play:hover {
-  background: #333;
-  color: #fff;
+	background: #333;
+	color: #fff;
 }
 
 a.play.big {
@@ -77,75 +82,103 @@ a.play.big {
 
 /* Body layout */
 body {
-    font-family: sans-serif;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    padding: 2em 2em;        /* spacing inside page edges */
+	font-family: sans-serif;
+	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
+	padding: 2em 2em;        /* spacing inside page edges */
 }
 
 /* Allow main to grow for sticky footer */
 main {
-    flex: 1;                 /* keeps footer behaviour */
-    max-width: 1000px;       /* prevents over-wide layout */
+	flex: 1;                 /* keeps footer behaviour */
+	max-width: 1000px;       /* prevents over-wide layout */
+}
+
+main p,
+main ul, 
+main ol, 
+main img, 
+main .video-wrapper, 
+main .timeline 
+main .project-entry .byline
+main .project-entry .tags,
+main .project-entry .body {
+	margin-left: 2em;
+}
+
+main h1, main h2, main h3, main h4, main h5, main h6,
+main .project-entry .title {
+	margin-left: 0;
+}
+
+footer {
+	border-top: 4px solid;
+	padding-top: 20px;
+	margin-top: 20px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
 }
 
 /* Vertical spacing (i.e. vertical rhythm) */
 h1 {
-  margin: 0 0 0 0;
-  line-height: 1.2;
+	margin: 0 0 0 0;
+	line-height: 1.2;
 }
 
 h2 { margin: 2em 0 0.5em 0; }
 h3 { margin: 1.5em 0 0.5em 0; }
 
 p  {
-  margin: 0 0 1em 0;
-  line-height: 1.2;
- }
+	margin: 0 0 1em 0;
+	line-height: 1.2;
+}
 
 main h2 {
-  margin-top: 1em;
-  margin-botom: 0.5em;
+	margin-top: 1em;
+	margin-bottom: 0.5em;
 }
 
 /* Images responsive */
 img {
-    display: block;
-    max-width: 100%;
-    height: auto;
+	display: block;
+	max-width: 100%;
+	height: auto;
 }
 
 /* Responsive video */
 .video-wrapper {
-    max-width: 80%;
-    overflow: hidden;
-    padding: 2em 0em;
+	max-width: 80%;
+	overflow: hidden;
+	padding: 2em 0em;
 }
 
 .video-wrapper video {
-    width: 100%;
-    height: auto;
-    display: block;
-    border-radius: 0.75em;
+	width: 100%;
+	height: auto;
+	display: block;
+	border-radius: 0.75em;
 }
 
 h1 .subtitle {
-  display: block;             /* forces subtitle on its own line */
-  font-size: 0.5em;           /* smaller than main heading */
-  font-weight: normal;        /* lighter than h1 */
-  color: #555;                /* optional color */
-  margin-top: 0.1em 0 0 0;          /* spacing below main title */
+	display: block;             /* forces subtitle on its own line */
+	font-size: 0.5em;           /* smaller than main heading */
+	font-weight: normal;        /* lighter than h1 */
+	color: #555;                /* optional color */
+	margin-top: 0.1em 0 0 0;          /* spacing below main title */
 }
 
 .game-entry {
-  display: flex;
-  gap: 1em;                   /* space between columns */
-  align-items: flex-start;
+	display: flex;
+	gap: 1em;                   /* space between columns */
+	align-items: flex-start;
 }
 
 .column {
-  flex: 1;                    /* equal width columns */
+	flex: 1;                    /* equal width columns */
 }
 
 /* ratio presets for columns */
@@ -155,190 +188,190 @@ h1 .subtitle {
 .col-3-4 { flex: 3; }
 
 h2 .subtitle {
-  display: block;
-  font-size: 0.75em;
-  font-weight: normal;
-  color: #555;
-  margin-top: 0.2em;
+	display: block;
+	font-size: 0.75em;
+	font-weight: normal;
+	color: #555;
+	margin-top: 0.2em;
 }
 
 h3 .subtitle {
-  display: block;
-  font-size: 0.75em;
-  font-weight: normal;
-  font-style: italic;
-  color: #555;
-  margin-top: 0.2em;
+	display: block;
+	font-size: 0.75em;
+	font-weight: normal;
+	font-style: italic;
+	color: #555;
+	margin-top: 0.2em;
 }
 
 h4 .subtitle {
-  display: block;
-  font-size: 1em;
-  font-weight: normal;
-  font-style: italic;
-  color: #555;
-  margin-top: -1em;
+	display: block;
+	font-size: 1em;
+	font-weight: normal;
+	font-style: italic;
+	color: #555;
+	margin-top: -1em;
 }
 
 h4 .author {
-  display: block;
-  font-size: 1em;
-  font-weight: bold;
-  color: #666;
-  margin-top: -0.5em;
-  margin-bottom: -1em;
+	display: block;
+	font-size: 1em;
+	font-weight: bold;
+	color: #666;
+	margin-top: -0.5em;
+	margin-bottom: -1em;
 }
 
 /* Change indentation for lists */
 ul, ol {
-  padding-inline-start: 1.5em;
-  line-height: 1.4;
+	padding-inline-start: 1.5em;
+	line-height: 1.4;
 }
 
 p.poem {
-  margin: 0 0 1.5em 0;
-  padding-left: 0.5em;
-  text-indent: -0.5em;
+	margin: 0 0 1.5em 0;
+	padding-left: 0.5em;
+	text-indent: -0.5em;
 }
 
 p.note {
-  font-size: 0.8em;
-  font-weight: normal;
-  color: #555;
-  font-style: italic;
+	font-size: 0.8em;
+	font-weight: normal;
+	color: #555;
+	font-style: italic;
 }
 
 /* mobile-specfic features, mobile friendly */
 @media (max-width: 768px) {
-  .game-entry {
-    flex-direction: column;
-  }
+	.game-entry {
+		flex-direction: column;
+	}
 } 
 
 /* Timeline, initially for Research Log */
 .timeline {
-  font-size: 0.85em;
-  color: #666;
-  display: block;
-  position: relative;
-  margin-top: 2em;
-  margin-bottom: 0.25em;
-  padding-left: 3em;           /* space for line + dots */
-  border-left: 2px solid #ccc; /* vertical line */
+	font-size: 0.85em;
+	color: #666;
+	display: block;
+	position: relative;
+	margin-top: 2em;
+	margin-bottom: 0.25em;
+	padding-left: 3em;           /* space for line + dots */
+	border-left: 2px solid #ccc; /* vertical line */
 }
 
 .timeline h3 {
-  margin: 0.25em 0 0.4em 0;
+	margin: 0.25em 0 0.4em 0;
 }
 
 .timeline p {
-  margin: 0;
-  max-width: 65ch;
+	margin: 0;
+	max-width: 65ch;
 }
 
 .timeline-item {
-  position: relative;
-  margin-bottom: 2em;
+	position: relative;
+	margin-bottom: 2em;
 }
 
 .timeline-item::before {
-  content: "";
-  position: absolute;
-  left: -3em;                  /* aligns with line */
-  top: 0.5em;
-  width: 2em;
-  height: 2px;
-  background: #ccc;
+	content: "";
+	position: absolute;
+	left: -3em;                  /* aligns with line */
+	top: 0.5em;
+	width: 2em;
+	height: 2px;
+	background: #ccc;
 }
 
 .timeline-item::after {
-  content: "";
-  position: absolute;
-  left: -1.1em;
-  top: 0.3em;
-  width: 0.6em;
-  height: 0.6em;
-  background: #666;
-  border-radius: 50%;
+	content: "";
+	position: absolute;
+	left: -1.1em;
+	top: 0.3em;
+	width: 0.6em;
+	height: 0.6em;
+	background: #666;
+	border-radius: 50%;
 }
 
 .timeline-date {
-  display: block;
-  margin-bottom: 0.3em;
-  position: relative;
+	display: block;
+	margin-bottom: 0.3em;
+	position: relative;
 }
 
 /* Tags and keywords */
 .tags {
-  display: flex;
-  flex-wrap: wrap;             /* allows multiple lines of tags */
-  gap: 0.5em;                  /* spacing between tags */
-  margin-top: 0.5em;           /* space above tags */ 
-  margin-bottom: 0.5em;
+	display: flex;
+	flex-wrap: wrap;             /* allows multiple lines of tags */
+	gap: 0.5em;                  /* spacing between tags */
+	margin-top: 0.5em;           /* space above tags */ 
+	margin-bottom: 0.5em;
 }
 
 .tag {
-  display: inline-block;
-  padding: 0.25em 0.6em;       /* vertical and horizontal padding */
-  border: 1px solid #666;      /* thin outline; adjust colour */
-  border-radius: 0.5em;        /* mild rounding */
-  font-size: 0.8em;            /* smaller than body text */
-  text-transform: uppercase;   /* small caps effect */
-  color: #333;                 /* text color */
-  background: transparent;     /* keeps it minimal */
-  line-height: 1.2;
-  white-space: nowrap;         /* prevents breaking inside tag */
+	display: inline-block;
+	padding: 0.25em 0.6em;       /* vertical and horizontal padding */
+	border: 1px solid #666;      /* thin outline; adjust colour */
+	border-radius: 0.5em;        /* mild rounding */
+	font-size: 0.8em;            /* smaller than body text */
+	text-transform: uppercase;   /* small caps effect */
+	color: #333;                 /* text color */
+	background: transparent;     /* keeps it minimal */
+	line-height: 1.2;
+	white-space: nowrap;         /* prevents breaking inside tag */
 }
 
 .project-entry {
-  margin-bottom: 0em;      /* spacing between projects */
-  margin-top: 2em;
+	margin-bottom: 0em;      /* spacing between projects */
+	margin-top: 2em;
 }
 
 .project-entry .title {
-  margin: 0;
-  font-size: 1.25em;
+	margin: 0;
+	font-size: 1.25em;
 }
 
 .project-entry .subtitle {
-  display: block;
-  font-size: 0.8em;
-  font-style: italic;
-  color: #555;
-  margin-top: 0.2em;
+	display: block;
+	font-size: 0.8em;
+	font-style: italic;
+	color: #555;
+	margin-top: 0.2em;
 }
 
 .project-entry .tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5em;
-  margin: 0.5em 0;         /* vertical spacing between subtitle and byline */
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5em;
+	margin: 0.5em 0;         /* vertical spacing between subtitle and byline */
 }
 
 .project-entry .tag {
-  display: inline-block;
-  padding: 0.25em 0.6em;
-  border: 1px solid #666;
-  border-radius: 0.5em;
-  font-size: 0.8em;
-  text-transform: uppercase;
-  color: #333;
-  background: transparent;
-  line-height: 1.2;
-  white-space: nowrap;
+	display: inline-block;
+	padding: 0.25em 0.6em;
+	border: 1px solid #666;
+	border-radius: 0.5em;
+	font-size: 0.8em;
+	text-transform: uppercase;
+	color: #333;
+	background: transparent;
+	line-height: 1.2;
+	white-space: nowrap;
 }
 
 .project-entry .byline {
-  font-size: 1em;
-  color: #000;
-  margin: 0;
-  font-style: italic;
+	font-size: 1em;
+	color: #000;
+	margin: 0;
+	font-style: italic;
 }
 
 .project-entry .body {
-  font-size: 1em;
-  margin-top: 1em;
-  margin-bottom: 0em;
+	font-size: 1em;
+	margin-top: 1em;
+	margin-bottom: 0em;
 }
 
 .project-entry.recent {
