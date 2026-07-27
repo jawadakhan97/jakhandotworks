@@ -100,8 +100,8 @@ main ul,
 main ol, 
 main img, 
 main .video-wrapper, 
-main .timeline 
-main .project-entry .byline
+main .timeline,
+main .project-entry .byline,
 main .project-entry .tags,
 main .project-entry .body {
 	margin-left: 2em;
@@ -121,6 +121,37 @@ footer {
 	align-items: center;
 	justify-content: center;
 	text-align: center;
+}
+
+/* Footer webring section */
+.footer-webring {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin-top: 15px;
+}
+
+.footer-webring .webring-logo {
+	border: 1px solid black;
+	display: flex;
+	flex-direction: row;
+}
+
+.footer-webring .webring-logo img {
+	width: 65px;
+}
+
+.footer-webring .webring-logo p {
+	max-width: 50px;
+	font-size: 16px;
+	font-family: monospace;
+}
+
+/* Kit form container */
+.kit-form-container {
+	margin-bottom: 15px;
+	width: 100%;
+	max-width: 700px;
 }
 
 /* Vertical spacing (i.e. vertical rhythm) */
