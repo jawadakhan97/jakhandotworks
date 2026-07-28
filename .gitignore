@@ -4,10 +4,10 @@ __pycache__/
 *.o
 *.obj
 *.class
+*.exe
 *.dll
 *.so
 *.a
-*.exe
 *.out
 
 # Dependencies
@@ -28,24 +28,20 @@ venv/
 .vscode/
 .idea/
 
-# Build directories
+# OS
+.DS_Store
+Thumbs.db
+
+# Build systems
 dist/
 build/
 target/
 .gradle/
-
-# Coverage
+.mypy_cache/
+.pytest_cache/
 coverage/
 htmlcov/
 .coverage
-
-# Python specific
-.mypy_cache/
-.pytest_cache/
-
-# System files
-.DS_Store
-Thumbs.db
 
 # Compressed files
 *.zip
