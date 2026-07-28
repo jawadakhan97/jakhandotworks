@@ -1,168 +1,41 @@
-/* Reset browser defaults */
-html, body {
-	margin: 0 auto;
-	max-width: 1200px;
+/* ==========================================================================
+   RESET & BASE STYLES
+   ========================================================================== */
+
+*, *::before, *::after {
 	box-sizing: border-box;
 }
 
-.navbar a {
-	position: relative;
-	display: inline-block;
-	line-height: 44px;
-	text-decoration: none;
-	color: #0070f3;
-	transition: color 0.2s;
+html {
+	margin: 0 auto;
+	max-width: 1200px;
 }
 
-.navbar a::before {
-	content: "";
-	position: absolute;
-	top: -8px;
-	bottom: -8px;
-	left: -8px;
-	right: -8px;
-}
-
-.navbar a:hover {
-	color: #0051a8;
-}
-
-.navbar a:focus {
-	color: #0051a8;
-	outline: 2px solid #0051a8;
-	outline-offset: 2px;
-}
-
-header {
-	border-bottom: 4px solid;
-}	
-
-a {
-	text-decoration: none;
-	color: #0070f3;
-	transition: color 0.2s;
-}
-
-a:hover,
-a:focus {
-	color: #0051a8;
-	text-decoration: underline;
-}
-
-a.play {
-	display: flex;
-	margin-top: 0.25em;
-	margin-bottom: 0.75em;
-	padding: 0.25em 0.5em;
-	border: 1px solid #666;
-	border-radius: 0.5em;
-	text-transform: uppercase;
-	line-height: 1.4;
-	color: #333;
-	width: 72px;
-	height: 24px;
-	align-items: center;
-	justify-content: center;
-}
-
-a.play:hover {
-	background: #333;
-	color: #fff;
-}
-
-a.play.big {
-	width: 144px;
-	height: 36px;
-}
-
-
-/* Body layout */
 body {
+	margin: 0;
 	font-family: sans-serif;
 	min-height: 100vh;
 	display: flex;
 	flex-direction: column;
-	padding: 2em 2em;        /* spacing inside page edges */
+	padding: 2em;
 }
 
-/* Allow main to grow for sticky footer */
-main {
-	flex: 1;                 /* keeps footer behaviour */
-	max-width: 1000px;       /* prevents over-wide layout */
-}
+/* ==========================================================================
+   TYPOGRAPHY
+   ========================================================================== */
 
-main p,
-main ul, 
-main ol, 
-main img, 
-main .video-wrapper, 
-main .timeline,
-main .project-entry .byline,
-main .project-entry .tags,
-main .project-entry .body,
-a.play {
-	margin-left: 2em;
-}
-
-main h1, main h2, main h3, main h4, main h5, main h6,
-main .project-entry .title {
-	margin-left: 0;
-}
-
-footer {
-	border-top: 4px solid;
-	padding-top: 20px;
-	margin-top: 20px;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: center;
-	text-align: center;
-}
-
-/* Footer webring section */
-.footer-webring {
-	display: flex;
-	align-items: center;
-	gap: 8px;
-	margin-top: 15px;
-}
-
-.footer-webring .webring-logo {
-	border: 1px solid black;
-	display: flex;
-	flex-direction: row;
-}
-
-.footer-webring .webring-logo img {
-	width: 65px;
-}
-
-.footer-webring .webring-logo p {
-	max-width: 50px;
-	font-size: 16px;
-	font-family: monospace;
-}
-
-/* Kit form container */
-.kit-form-container {
-	margin-bottom: 15px;
-	width: 100%;
-	max-width: 700px;
-}
-
-/* Vertical spacing (i.e. vertical rhythm) */
+/* Headings */
 h1 {
-	margin: 0 0 0 0;
+	margin: 0;
 	line-height: 1.2;
 }
 
-h2 { margin: 2em 0 0.5em 0; }
-h3 { margin: 1.5em 0 0.5em 0; }
+h2 {
+	margin: 2em 0 0.5em 0;
+}
 
-p  {
-	margin: 0 0 1em 0;
-	line-height: 1.2;
+h3 {
+	margin: 1.5em 0 0.5em 0;
 }
 
 main h2 {
@@ -170,54 +43,14 @@ main h2 {
 	margin-bottom: 0.5em;
 }
 
-/* Images responsive */
-img {
-	display: block;
-	max-width: 80%;
-	height: auto;
-}
-
-/* Responsive video */
-.video-wrapper {
-	max-width: 80%;
-	overflow: hidden;
-	padding: 2em 0em;
-}
-
-.video-wrapper video {
-	width: 100%;
-	height: auto;
-	display: block;
-	border-radius: 0.75em;
-}
-
+/* Subtitles */
 h1 .subtitle {
-	display: block;             /* forces subtitle on its own line */
-	font-size: 0.5em;           /* smaller than main heading */
-	font-weight: normal;        /* lighter than h1 */
-	color: #555;                /* optional color */
-	margin-top: 0.1em 0 0 0;          /* spacing below main title */
+	display: block;
+	font-size: 0.5em;
+	font-weight: normal;
+	color: #555;
+	margin-top: 0.1em;
 }
-
-.game-entry {
-	display: flex;
-	gap: 1em;                   /* space between columns */
-	align-items: flex-start;
-}
-
-.column {
-	flex: 1;                    /* equal width columns */
-}
-
-.column .play {
-	margin-left: 0em;
-}
-
-/* ratio presets for columns */
-.col-1-3 { flex: 1; }
-.col-2-3 { flex: 2; }
-.col-1-4 { flex: 1; }
-.col-3-4 { flex: 3; }
 
 h2 .subtitle {
 	display: block;
@@ -254,10 +87,10 @@ h4 .author {
 	margin-bottom: -1em;
 }
 
-/* Change indentation for lists */
-ul, ol {
-	padding-inline-start: 1.5em;
-	line-height: 1.4;
+/* Paragraphs */
+p {
+	margin: 0 0 1em 0;
+	line-height: 1.2;
 }
 
 p.poem {
@@ -273,23 +106,211 @@ p.note {
 	font-style: italic;
 }
 
-/* mobile-specfic features, mobile friendly */
-@media (max-width: 768px) {
-	.game-entry {
-		flex-direction: column;
-	}
-} 
+/* Lists */
+ul, ol {
+	padding-inline-start: 1.5em;
+	line-height: 1.4;
+}
 
-/* Timeline, initially for Research Log */
+/* ==========================================================================
+   LINKS
+   ========================================================================== */
+
+a {
+	text-decoration: none;
+	color: #0070f3;
+	transition: color 0.2s;
+}
+
+a:hover,
+a:focus {
+	color: #0051a8;
+	text-decoration: underline;
+}
+
+/* Navbar links */
+.navbar a {
+	position: relative;
+	display: inline-block;
+	line-height: 44px;
+}
+
+.navbar a::before {
+	content: "";
+	position: absolute;
+	top: -8px;
+	bottom: -8px;
+	left: -8px;
+	right: -8px;
+}
+
+.navbar a:hover,
+.navbar a:focus {
+	color: #0051a8;
+}
+
+.navbar a:focus {
+	outline: 2px solid #0051a8;
+	outline-offset: 2px;
+}
+
+/* Play button links */
+a.play {
+	display: flex;
+	margin: 0.25em 0 0.75em 2em;
+	padding: 0.25em 0.5em;
+	border: 1px solid #666;
+	border-radius: 0.5em;
+	text-transform: uppercase;
+	line-height: 1.4;
+	color: #333;
+	width: 72px;
+	height: 24px;
+	align-items: center;
+	justify-content: center;
+}
+
+a.play:hover {
+	background: #333;
+	color: #fff;
+	text-decoration: none;
+}
+
+a.play.big {
+	width: 144px;
+	height: 36px;
+}
+
+.column .play {
+	margin-left: 0;
+}
+
+/* ==========================================================================
+   LAYOUT
+   ========================================================================== */
+
+header {
+	border-bottom: 4px solid;
+}
+
+main {
+	flex: 1;
+	max-width: 1000px;
+}
+
+main p,
+main ul,
+main ol,
+main img,
+main .video-wrapper,
+main .timeline,
+main .project-entry .byline,
+main .project-entry .tags,
+main .project-entry .body {
+	margin-left: 2em;
+}
+
+main h1, main h2, main h3, main h4, main h5, main h6,
+main .project-entry .title {
+	margin-left: 0;
+}
+
+footer {
+	border-top: 4px solid;
+	padding-top: 20px;
+	margin-top: 20px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+}
+
+/* ==========================================================================
+   COMPONENTS
+   ========================================================================== */
+
+/* Images */
+img {
+	display: block;
+	max-width: 80%;
+	height: auto;
+}
+
+/* Video wrapper */
+.video-wrapper {
+	max-width: 80%;
+	overflow: hidden;
+	padding: 2em 0;
+}
+
+.video-wrapper video {
+	width: 100%;
+	height: auto;
+	display: block;
+	border-radius: 0.75em;
+}
+
+/* Game entry layout */
+.game-entry {
+	display: flex;
+	gap: 1em;
+	align-items: flex-start;
+}
+
+.column {
+	flex: 1;
+}
+
+/* Column ratio presets */
+.col-1-3 { flex: 1; }
+.col-2-3 { flex: 2; }
+.col-1-4 { flex: 1; }
+.col-3-4 { flex: 3; }
+
+/* Kit form container */
+.kit-form-container {
+	margin-bottom: 15px;
+	width: 100%;
+	max-width: 700px;
+}
+
+/* Footer webring */
+.footer-webring {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin-top: 15px;
+}
+
+.footer-webring .webring-logo {
+	border: 1px solid black;
+	display: flex;
+	flex-direction: row;
+}
+
+.footer-webring .webring-logo img {
+	width: 65px;
+}
+
+.footer-webring .webring-logo p {
+	max-width: 50px;
+	font-size: 16px;
+	font-family: monospace;
+}
+
+/* ==========================================================================
+   TIMELINE
+   ========================================================================== */
+
 .timeline {
 	font-size: 0.85em;
 	color: #666;
 	display: block;
 	position: relative;
-	margin-top: 2em;
-	margin-bottom: 0.25em;
-	padding-left: 3em;           /* space for line + dots */
-	border-left: 2px solid #ccc; /* vertical line */
+	margin: 2em 0 0.25em;
+	padding-left: 3em;
+	border-left: 2px solid #ccc;
 }
 
 .timeline h3 {
@@ -309,7 +330,7 @@ p.note {
 .timeline-item::before {
 	content: "";
 	position: absolute;
-	left: -3em;                  /* aligns with line */
+	left: -3em;
 	top: 0.5em;
 	width: 2em;
 	height: 2px;
@@ -333,31 +354,36 @@ p.note {
 	position: relative;
 }
 
-/* Tags and keywords */
+/* ==========================================================================
+   TAGS
+   ========================================================================== */
+
 .tags {
 	display: flex;
-	flex-wrap: wrap;             /* allows multiple lines of tags */
-	gap: 0.5em;                  /* spacing between tags */
-	margin-top: 0.5em;           /* space above tags */ 
-	margin-bottom: 0.5em;
+	flex-wrap: wrap;
+	gap: 0.5em;
+	margin: 0.5em 0;
 }
 
 .tag {
 	display: inline-block;
-	padding: 0.25em 0.6em;       /* vertical and horizontal padding */
-	border: 1px solid #666;      /* thin outline; adjust colour */
-	border-radius: 0.5em;        /* mild rounding */
-	font-size: 0.8em;            /* smaller than body text */
-	text-transform: uppercase;   /* small caps effect */
-	color: #333;                 /* text color */
-	background: transparent;     /* keeps it minimal */
+	padding: 0.25em 0.6em;
+	border: 1px solid #666;
+	border-radius: 0.5em;
+	font-size: 0.8em;
+	text-transform: uppercase;
+	color: #333;
+	background: transparent;
 	line-height: 1.2;
-	white-space: nowrap;         /* prevents breaking inside tag */
+	white-space: nowrap;
 }
 
+/* ==========================================================================
+   PROJECT ENTRIES
+   ========================================================================== */
+
 .project-entry {
-	margin-bottom: 0em;      /* spacing between projects */
-	margin-top: 2em;
+	margin: 2em 0 0;
 }
 
 .project-entry .title {
@@ -374,10 +400,7 @@ p.note {
 }
 
 .project-entry .tags {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 0.5em;
-	margin: 0.5em 0;         /* vertical spacing between subtitle and byline */
+	margin: 0.5em 0;
 }
 
 .project-entry .tag {
@@ -402,8 +425,7 @@ p.note {
 
 .project-entry .body {
 	font-size: 1em;
-	margin-top: 1em;
-	margin-bottom: 0em;
+	margin: 1em 0 0;
 }
 
 .project-entry.recent {
@@ -412,6 +434,14 @@ p.note {
 	padding: 1em;
 	margin-top: 2em;
 	max-width: 600px;
-	/* margin-left: auto;
-	margin-right: auto; */
+}
+
+/* ==========================================================================
+   RESPONSIVE
+   ========================================================================== */
+
+@media (max-width: 768px) {
+	.game-entry {
+		flex-direction: column;
+	}
 }
