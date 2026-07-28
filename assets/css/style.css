@@ -52,17 +52,13 @@ a:focus {
 a.play {
 	display: flex;
 	margin-top: 0.25em;
-	margin-left: 0em;      /* space after sentence */
 	margin-bottom: 0.75em;
 	padding: 0.25em 0.5em;
 	border: 1px solid #666;
 	border-radius: 0.5em;
-	gap: 15px;
-	font-size: 0.8em;
 	text-transform: uppercase;
 	line-height: 1.4;
 	color: #333;
-	text-decoration: none;
 	width: 72px;
 	height: 24px;
 	align-items: center;
@@ -103,7 +99,8 @@ main .video-wrapper,
 main .timeline,
 main .project-entry .byline,
 main .project-entry .tags,
-main .project-entry .body {
+main .project-entry .body,
+a.play {
 	margin-left: 2em;
 }
 
@@ -176,7 +173,7 @@ main h2 {
 /* Images responsive */
 img {
 	display: block;
-	max-width: 100%;
+	max-width: 80%;
 	height: auto;
 }
 
@@ -210,6 +207,10 @@ h1 .subtitle {
 
 .column {
 	flex: 1;                    /* equal width columns */
+}
+
+.column .play {
+	margin-left: 0em;
 }
 
 /* ratio presets for columns */
