@@ -92,21 +92,11 @@ body {
 main {
 	flex: 1;                 /* keeps footer behaviour */
 	max-width: 1000px;       /* prevents over-wide layout */
-	
-	/* CSS Grid architecture for indentation */
-	display: grid;
-	grid-template-columns: 2em 1fr; /* Column 1: The 2em indentation. Column 2: The remaining content. */
 }
 
-/* Base directive: Force all direct children into the second column (the content area). */
-main > * {
-	grid-column: 2;
-}
-
-/* Exception directive: Force headings to span across both columns, 
-   anchoring them to the absolute left edge (Column 1). */
-main > :is(h1, h2, h3, h4, h5, h6) {
-	grid-column: 1 / -1; 
+/* Indent all direct children of main except headings */
+main > :not(h1):not(h2):not(h3):not(h4):not(h5):not(h6) {
+	margin-left: 2em;
 }
 
 footer {
