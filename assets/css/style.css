@@ -52,6 +52,7 @@ a:focus {
 a.play {
 	display: flex;
 	margin-top: 0.25em;
+	margin-left: 0em;      /* space after sentence */
 	margin-bottom: 0.75em;
 	padding: 0.25em 0.5em;
 	border: 1px solid #666;
@@ -94,9 +95,21 @@ main {
 	max-width: 1000px;       /* prevents over-wide layout */
 }
 
-/* Indent all direct children of main except headings */
-main > :not(h1):not(h2):not(h3):not(h4):not(h5):not(h6) {
+main p,
+main ul, 
+main ol, 
+main img, 
+main .video-wrapper, 
+main .timeline,
+main .project-entry .byline,
+main .project-entry .tags,
+main .project-entry .body {
 	margin-left: 2em;
+}
+
+main h1, main h2, main h3, main h4, main h5, main h6,
+main .project-entry .title {
+	margin-left: 0;
 }
 
 footer {
