@@ -3,16 +3,16 @@ title: Northern Graveyard
 subtitle: Featured Project
 tagline: Fallout in Canada meets Disco Elysium
 description:
-landing_description: |
+landing_description: >-
   A vast speculative solarpunk narrative work about what Canada might look like in the not too distant future, wrecked by nuclear disaster and an increasingly isolated world.
 type: work
 tags:
   - game
   - narrative
 keywords: 
-  - sci-fi
-  - geopolitical
-  - story rich
+  - Sci-fi
+  - Geopolitical
+  - Story Rich
 featured: true
 weight: 10
 features:
@@ -20,7 +20,7 @@ features:
   - Settings with different environments
   - Uncover the mystery of how Canada fell into ruin
   - Episodic
-  - Decisions effect where the story goes
+  - Decisions affect where the story goes
 project: northern-graveyard
 preview_title: Preview
 preview_type: list

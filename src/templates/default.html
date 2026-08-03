@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="$if(lang)$$lang$$else$en$endif$">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+        <title>$if(title)$$title$$else$Jawad A. Khan$endif$</title>
+
+        $if(description)$
+        <meta name="description" content="$description$" />
+        $endif$
+
+        <link rel="stylesheet" href="$root_url$assets/css/style.css" />
+
+        $for(header-includes)$
+        $header-includes$
+        $endfor$
+    </head>
+
+    <body>
+        <header>
+            <h1>
+                <a href="$root_url$index.html" style="text-decoration: none; color: inherit;">Jawad A. Khan</a>
+                <span class="subtitle">Narrative Designer</span>
+            </h1>
+            <nav class="navbar">
+                <a href="$root_url$index.html">Home</a> |
+                <a href="$root_url$about/index.html">About</a> |
+                <a href="$root_url$works/index.html">Works</a> |
+                <a href="$root_url$research-log/index.html">Research Log</a>
+            </nav>
+        </header>
+
+        <main>
+            $if(title)$
+            $if(hide-title)$
+            $else$
+            <h1>
+                $title$
+                $if(subtitle)$
+                <span class="subtitle">$subtitle$</span>
+                $endif$
+            </h1>
+            $endif$
+            $endif$
+
+            $body$
+        </main>
+
+        <footer>
+            <div class="kit-form-container">
+                <script async data-uid="65ecf604e1" src="https://jawadzai.kit.com/65ecf604e1/index.js"></script>
+            </div>
+
+            <p>&copy; 2026 Jawad A. Khan | <a href="https://github.com/jawadakhan97/jakhandotworks">Source Code</a></p>
+
+            <div class="footer-webring">
+                <a href="https://webring.jaydenpb.net/" target="_blank">
+                    <div class="webring-logo">
+                        <img src="https://webring.jaydenpb.net/img/cntower.svg" alt="CS Webring" />
+                        <p>
+                        TOR GDC RING
+                        </p>
+                    </div>
+                </a>
+                <div class="nav">
+                    <a href="https://webring.jaydenpb.net/#jakhan.ca?nav=prev">←</a>
+                    <a href="https://webring.jaydenpb.net/#jakhan.ca?nav=next">→</a>
+                </div>
+            </div>
+        </footer>
+    </body>
+</html>

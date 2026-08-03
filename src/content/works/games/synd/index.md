@@ -1,5 +1,5 @@
 ---
-title: Sync
+title: Synd
 subtitle: Featured Project
 tagline: Explore the mysterious city of Synd
 description:
@@ -16,7 +16,7 @@ keywords:
 featured: true
 weight: 10
 features:
-  - Explore the city of Sync, a former metropolis of the pre-modern world
+  - Explore the city of Synd, a former metropolis of the pre-modern world
   - Investigate, discover the secret of what happened to the city
 project: synd
 preview_title: 

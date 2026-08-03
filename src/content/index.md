@@ -3,12 +3,13 @@ title: "Jawad A. Khan | Portfolio"
 subtitle: "What's written is formed"
 lang: "en"
 description: "Showcase of an eclectic creative."
+hide-title: true
 ---
 
-## Hollow Thread
+{{card: hollow-thread}}
 
-## Northern Graveyard
+{{card: northern-graveyard}}
 
-## Crab Cannery Ship
+{{card: crab-cannery-simulator}}
 
-## Synd
+{{card: synd}}

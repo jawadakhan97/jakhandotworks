@@ -1,0 +1,21 @@
+[project]
+name = "jakhandotworks-redux"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Jawad A. Khan", email = "jawad_khan@outlook.com" }
+]
+requires-python = ">=3.14"
+dependencies = [
+    "livereload==2.7.1",
+    "pyyaml>=6.0.3",
+    "tornado==6.5.4",
+]
+
+[project.scripts]
+jakhandotworks-redux = "jakhandotworks_redux:main"
+
+[build-system]
+requires = ["uv_build>=0.12.1,<0.13.0"]
+build-backend = "uv_build"
