@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+        <title>Jawad A. Khan</title>
+
+        
+        <link rel="stylesheet" href="../../../../assets/css/style.css" />
+
+            </head>
+
+    <body>
+        <header>
+            <h1>
+                <a href="../../../../index.html" style="text-decoration: none; color: inherit;">Jawad A. Khan</a>
+                <span class="subtitle">Narrative Designer</span>
+            </h1>
+            <nav class="navbar">
+                <a href="../../../../index.html">Home</a> |
+                <a href="../../../../about/index.html">About</a> |
+                <a href="../../../../works/index.html">Works</a> |
+                <a href="../../../../research-log/index.html">Research Log</a>
+            </nav>
+        </header>
+
+        <main>
+            
+            <p>Currently, in Godot 4.6, Dialogic 2 basic functionality
+            is working. Below is a list of what is currently
+            implemented: - start screen - start game button - quit
+            button - options button (does nothing)</p>
+            <p>The current components in the game include: - player -
+            npc - interaction_area - inherited by player, npc, and env
+            interactable - env_interactable</p>
+            <p>Some problems: - How to determine, when two interactables
+            are within range (equal range?) which is interacted with? -
+            In a 3D game presumably there’d be a raycast from screen
+            space, camera, or where the player character is facing -
+            Perhaps I can implement it with the direction of the player
+            character in 2D? - Currently have it done through
+            <code>get_closest()</code> function in interaction_area -
+            Seems to work fine - Player can repeatedly press the
+            interact key to restart the current dialogue - There is no
+            state tracking, the same dialogue can occur over and over
+            again - There isn’t any indication an option has been
+            selected prior</p>
+            <p>Things to implement: - State tracking - There is a global
+            script, game_data which is autoloaded - Barks - When within
+            range, a bark will be automatically played… probably need to
+            use labels for each character timeline “bark-1” or something
+            which triggers on entering a body area or interaction area -
+            Could implement a disco elysium style ring with tidbits of
+            info - Would need to change the area/body erase distance, to
+            keep it in the ring when the point of interest is walked
+            away from… - Is that necessary?</p>
+        </main>
+
+        <footer>
+            <div class="kit-form-container">
+                <script async data-uid="65ecf604e1" src="https://jawadzai.kit.com/65ecf604e1/index.js"></script>
+            </div>
+
+            <p>&copy; 2026 Jawad A. Khan | <a href="https://github.com/jawadakhan97/jakhandotworks">Source Code</a></p>
+
+            <div class="footer-webring">
+                <a href="https://webring.jaydenpb.net/" target="_blank">
+                    <div class="webring-logo">
+                        <img src="https://webring.jaydenpb.net/img/cntower.svg" alt="CS Webring" />
+                        <p>
+                        TOR GDC RING
+                        </p>
+                    </div>
+                </a>
+                <div class="nav">
+                    <a href="https://webring.jaydenpb.net/#jakhan.ca?nav=prev">←</a>
+                    <a href="https://webring.jaydenpb.net/#jakhan.ca?nav=next">→</a>
+                </div>
+            </div>
+        </footer>
+    </body>
+</html>

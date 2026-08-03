@@ -215,34 +215,31 @@ def render_card(slug, projects, current_out_rel):
 
     out = [f'<article class="{esc(" ".join(classes))}">']
 
-    # Header block
-    out.append('<header class="entry-header">')
-    out.append(f'<h2 class="title">{esc(title)}</h2>')
+    # Title block - keep it simple, no wrapper needed
+    out.append(f'<h2 class="project-title">{esc(title)}</h2>')
 
     if meta.get("subtitle"):
-        out.append(f'<p class="subtitle">{esc(meta.get("subtitle"))}</p>')
+        out.append(f'<p class="project-subtitle">{esc(meta.get("subtitle"))}</p>')
 
     visible_tags = as_list(meta.get("keywords") or meta.get("tags"))
     if visible_tags:
         out.append(
-            '<div class="tags">'
+            '<div class="project-tags">'
             + "".join(f'<span class="tag">{esc(t)}</span>' for t in visible_tags)
             + "</div>"
         )
 
     if meta.get("tagline") or meta.get("byline"):
         out.append(
-            f'<p class="byline">{esc(meta.get("tagline") or meta.get("byline"))}</p>'
+            f'<p class="project-byline">{esc(meta.get("tagline") or meta.get("byline"))}</p>'
         )
 
-    out.append("</header>")
-
-    # Main block
-    out.append('<div class="entry-main">')
+    # Main content block
+    out.append('<div class="project-content">')
 
     if meta.get("landing_description") or meta.get("description"):
         out.append(
-            f'<div class="body">{markdown_to_html(meta.get("landing_description") or meta.get("description"))}</div>'
+            f'<div class="project-body">{markdown_to_html(meta.get("landing_description") or meta.get("description"))}</div>'
         )
 
     features = meta.get("features")
@@ -252,7 +249,7 @@ def render_card(slug, projects, current_out_rel):
             if isinstance(features, list)
             else markdown_to_html(str(features))
         )
-        out.append(f'<div class="features"><h3>Key Features</h3>{f_html}</div>')
+        out.append(f'<div class="project-features"><h3>Key Features</h3>{f_html}</div>')
 
     # Default: play buttons / previews go in the main column.
     if previews_html and preview_placement != "aside":
@@ -262,7 +259,7 @@ def render_card(slug, projects, current_out_rel):
 
     # Aside block, only when needed
     if has_aside:
-        out.append('<aside class="entry-aside">')
+        out.append('<aside class="project-aside">')
 
         if has_image:
             if image_url.startswith(("http://", "https://")):
@@ -272,7 +269,7 @@ def render_card(slug, projects, current_out_rel):
             else:
                 src = get_root_prefix(current_out_rel) + image_url
 
-            out.append(f'<img src="{esc(src)}" alt="{esc(title)}" class="entry-image">')
+            out.append(f'<img src="{esc(src)}" alt="{esc(title)}" class="project-image">')
 
         if previews_html and preview_placement == "aside":
             out.append(previews_html)
