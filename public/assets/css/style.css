@@ -52,6 +52,17 @@ h1 .subtitle {
 	margin-top: 0.1em;
 }
 
+/* Page subtitle (for non-homepage titles) */
+.page-subtitle {
+	display: block;
+	font-size: 1em;
+	font-weight: bold;
+	font-style: italic;
+	color: #000;
+	margin-top: 0.5em;
+	margin-bottom: 1.5em;
+}
+
 h2 .subtitle {
 	display: block;
 	font-size: 0.75em;
@@ -198,7 +209,7 @@ main {
 	max-width: 1000px;
 }
 
-main p,
+main p:not(.page-subtitle),
 main ul,
 main ol,
 main img,
@@ -375,7 +386,7 @@ img {
    ========================================================================== */
 
 .project-entry {
-  margin: 3em 0;
+  margin: 1.5em 0;
 }
 
 .project-title {
@@ -469,8 +480,6 @@ img {
 
 /* Featured card styling */
 .project-entry.featured {
-  border: 1px solid #666;
-  border-radius: 8px;
   padding: 1em;
   margin-top: 2em;
   max-width: 600px;
@@ -478,8 +487,6 @@ img {
 
 /* Recent card styling */
 .project-entry.recent {
-  border: 1px solid #666;
-  border-radius: 8px;
   padding: 1em;
   margin-top: 2em;
   max-width: 600px;
