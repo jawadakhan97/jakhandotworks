@@ -37,8 +37,9 @@ I don't have much more to say, thanks for reading!
 
 # Currently Reading
 Not kept up-to-date!
+
 - _Misery and Glory: The Long March and its Antecedents_ by Jin Yinan, 2020
 - _A Canticle for Leibowitz_ by Walter M. Miller Jr., 1959
 - _Peak: Secrets from the New Science of Expertise_ by Anders Ericsson, 2016
 - _The Crab Cannery Ship and Other Novels of Struggle_ by Kobayashi Takiji
-_ _Afghan Napoleon: The Life of Ahmad Shah Massoud_ by Sandy Gall, 2021
+- _Afghan Napoleon: The Life of Ahmad Shah Massoud_ by Sandy Gall, 2021
