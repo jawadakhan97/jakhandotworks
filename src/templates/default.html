@@ -35,12 +35,9 @@
             $if(title)$
             $if(hide-title)$
             $else$
-            <h1>
-                $title$
-                $if(subtitle)$
-                <span class="subtitle">$subtitle$</span>
-                $endif$
-            </h1>
+            $if(subtitle)$
+            <p class="page-subtitle">$subtitle$</p>
+            $endif$
             $endif$
             $endif$
 
