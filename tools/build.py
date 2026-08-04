@@ -235,7 +235,10 @@ def render_simple_template(template_text, variables):
         var_name = match.group(1)
         if var_name in variables:
             value = variables[var_name]
-            if isinstance(value, (str, int)):
+            # Convert date objects to ISO format string
+            if hasattr(value, 'isoformat'):
+                return value.isoformat()
+            if isinstance(value, (str, int, float)):
                 return str(value)
         return match.group(0)  # Keep original if not found
     
