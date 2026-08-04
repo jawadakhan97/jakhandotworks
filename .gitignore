@@ -1,1 +1,3 @@
-(public/blog/1_first_post/index.html, public/blog/index.html, public/newsletter/index.html, src/templates/blog.html, tools/build.py)
+(public/blog/index.html, public/newsletter/index.html) are source/config files, and there are no build artifacts, dependencies, or temp files in the changes.
+
+(empty — output nothing)
