@@ -111,10 +111,10 @@ def generate_listing_html(posts, content_type, title, output_depth):
     for post in posts:
         date_str = f" — {post['date']}" if post['date'] else ""
         # Generate relative path based on output depth
-        rel_path = "../" * output_depth + post['slug_with_num']
+        rel_path = "../" * output_depth + post['slug_with_num'] + "/index.html"
         items_html += f'''
         <li class="listing-item">
-            <a href="{rel_path}/">{post['title']}</a>
+            <a href="{rel_path}">{post['title']}</a>
             <span class="listing-meta">{item_label} #{post['number']}{date_str}</span>
         </li>'''
     

@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 import html
+import json
 import os
 import re
 import shutil
 import subprocess
 import sys
+from datetime import datetime
 from pathlib import Path
 
 try:
@@ -18,7 +20,14 @@ except ImportError:
 ROOT = Path.cwd()
 CONTENT = (ROOT / "src" / "content").resolve()
 PUBLIC = ROOT / "public"
-TEMPLATE = ROOT / "src" / "templates" / "default.html"
+DEFAULT_TEMPLATE = ROOT / "src" / "templates" / "default.html"
+BLOG_TEMPLATE = ROOT / "src" / "templates" / "blog.html"
+NEWSLETTER_TEMPLATE = ROOT / "src" / "templates" / "newsletter.html"
+LISTINGS_STATE_FILE = ROOT / ".listings_state.json"
+
+# Content directories
+NEWSLETTER_DIR = CONTENT / "newsletter"
+BLOG_DIR = CONTENT / "blog"
 
 # UPDATED: Point to your static assets folder
 ASSETS_SRC = ROOT / "src" / "static" / "assets"
@@ -131,6 +140,147 @@ def normalize_url(url, current_out_rel):
     if url.startswith("/"):
         return get_root_prefix(current_out_rel) + url.lstrip("/")
     return url
+
+
+def load_listings_state():
+    """Load the state file tracking processed posts."""
+    if LISTINGS_STATE_FILE.exists():
+        try:
+            return json.loads(LISTINGS_STATE_FILE.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, IOError):
+            pass
+    return {"newsletter": [], "blog": []}
+
+
+def save_listings_state(state):
+    """Save the state file."""
+    LISTINGS_STATE_FILE.write_text(json.dumps(state, indent=2), encoding="utf-8")
+
+
+def scan_content_directory(directory, content_type):
+    """Scan a content directory and return sorted list of posts."""
+    posts = []
+    
+    if not directory.exists():
+        return posts
+    
+    # Find all numbered directories (e.g., 1_first_newsletter, 2_second_post)
+    pattern = re.compile(r"(\d+)_(.+?)/index\.md$")
+    
+    for md_file in directory.rglob("index.md"):
+        # Skip the main index.md
+        if md_file.parent == directory:
+            continue
+        
+        rel_path = md_file.relative_to(CONTENT)
+        match = pattern.search(str(rel_path))
+        
+        if match:
+            issue_num = match.group(1)
+            slug = match.group(2)
+            
+            meta, _ = split_front_matter(md_file.read_text(encoding="utf-8"))
+            try:
+                meta = yaml.safe_load(meta) or {}
+            except yaml.YAMLError:
+                meta = {}
+            
+            # Skip drafts
+            if meta.get("draft", False) is True:
+                continue
+            
+            title = meta.get("title", f"Issue {issue_num}")
+            date = meta.get("date", "")
+            
+            posts.append({
+                "number": issue_num,
+                "slug": slug,
+                "slug_with_num": f"{issue_num}_{slug}",
+                "title": title,
+                "date": date,
+            })
+    
+    # Sort by number
+    posts.sort(key=lambda x: int(x["number"]))
+    return posts
+
+
+def render_simple_template(template_text, variables):
+    """Simple template renderer for {{ variable }} syntax."""
+    result = template_text
+    
+    # First handle for loops for tags (before single variable replacement)
+    if "tags" in variables and variables["tags"]:
+        for_pattern = re.compile(r'\{%\s*for\s+tag\s+in\s+tags\s*%\}(.*?)\{%\s*endfor\s*%\}', re.S)
+        if for_pattern.search(result):
+            items_html = "".join(f'<span class="blog-tag">{esc(tag)}</span>' for tag in variables["tags"])
+            result = for_pattern.sub(items_html, result)
+    
+    # Handle simple if conditions
+    if_cond_pattern = re.compile(r"\{%\s*if\s+(\w+)\s*%\}(.*?)\{%\s*endif\s*%\}", re.S)
+    
+    def replace_if(match):
+        var_name = match.group(1)
+        content = match.group(2)
+        if variables.get(var_name):
+            return content
+        return ""
+    
+    result = if_cond_pattern.sub(replace_if, result)
+    
+    # Then replace simple {{ variable }} patterns
+    for key, value in variables.items():
+        if isinstance(value, str):
+            result = result.replace("{{ " + key + " }}", value)
+        elif isinstance(value, int):
+            result = result.replace("{{ " + key + " }}", str(value))
+    
+    return result
+
+
+def generate_listing_html(posts, content_type, title):
+    """Generate HTML listing page using minimal styling."""
+    year = datetime.now().year
+    
+    if content_type == "newsletter":
+        item_label = "Issue"
+    else:
+        item_label = "Post"
+    
+    items_html = ""
+    for post in posts:
+        date_str = f" — {post['date']}" if post['date'] else ""
+        # Generate relative path: from public/newsletter/index.html to public/newsletter/1_*/index.html
+        rel_path = post['slug_with_num'] + "/index.html"
+        items_html += f'''
+        <li class="listing-item">
+            <a href="{rel_path}">{esc(post['title'])}</a>
+            <span class="listing-meta">{item_label} #{post['number']}{date_str}</span>
+        </li>'''
+    
+    intro_text = f"Below are all the {content_type}s I've published."
+    if content_type == "newsletter":
+        intro_text += " Subscribe to receive future newsletters directly in your inbox."
+    
+    listing_html = f'''<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{esc(title)} Archive</title>
+</head>
+<body>
+    <h1>{esc(title)} Archive</h1>
+    <p class="intro">{intro_text}</p>
+    <ul class="listing">{items_html}
+    </ul>
+    <footer>
+        <p>&copy; {year} Jawad A. Khan</p>
+    </footer>
+</body>
+</html>'''
+    
+    return listing_html
 
 
 def build_project_index():
@@ -298,6 +448,10 @@ def build_site():
     # 3. Build pages
     projects = build_project_index()
 
+    # Track newsletters and blog posts for listing generation
+    newsletters = []
+    blog_posts = []
+
     for source_path in CONTENT.rglob("*.md"):
         print(f"Building {source_path.relative_to(ROOT)}...")
         raw_yaml, body, has_front = split_front_matter(
@@ -309,44 +463,163 @@ def build_site():
         out_path = PUBLIC / out_rel
         out_path.parent.mkdir(parents=True, exist_ok=True)
 
-        # Pass out_rel to render_card so links are correct relative to the OUTPUT file
-        def replace_card(match):
-            return "\n\n" + render_card(match.group(1), projects, out_rel) + "\n\n"
+        # Check if this is a newsletter or blog post
+        rel_path_str = str(source_path.relative_to(CONTENT))
+        is_newsletter = rel_path_str.startswith("newsletter/") and source_path.name == "index.md" and source_path.parent != NEWSLETTER_DIR
+        is_blog = rel_path_str.startswith("blog/") and source_path.name == "index.md" and source_path.parent != BLOG_DIR
 
-        expanded_body = CARD_RE.sub(replace_card, body)
-        full_markdown = (
-            f"---\n{raw_yaml}\n---\n{expanded_body}" if has_front else expanded_body
-        )
+        # Parse front matter for newsletters/blog posts
+        meta = {}
+        if has_front:
+            try:
+                meta = yaml.safe_load(raw_yaml) or {}
+            except yaml.YAMLError:
+                meta = {}
 
-        root_url = get_root_prefix(out_rel)
-
-        # Pandoc handles the entire template, including header/footer, and writes directly to disk
-        cmd = [
-            "pandoc",
-            "-f",
-            "markdown+yaml_metadata_block+raw_html",
-            "-t",
-            "html5",
-            "--standalone",
-            "--template",
-            str(TEMPLATE),
-            "-V",
-            f"root_url={root_url}",
-            "-o",
-            str(out_path),
-        ]
-
-        proc = subprocess.run(
-            cmd, input=full_markdown.encode("utf-8"), capture_output=True
-        )
-
-        if proc.returncode != 0:
-            print(
-                f"Error building {source_path}:\n{proc.stderr.decode('utf-8')}",
-                file=sys.stderr,
-            )
-        else:
+        if is_newsletter or is_blog:
+            # Build individual post page using template
+            content_type = "newsletter" if is_newsletter else "blog"
+            template_path = NEWSLETTER_TEMPLATE if is_newsletter else BLOG_TEMPLATE
+            
+            # Convert markdown body to HTML
+            content_html = markdown_to_html(body)
+            
+            # Get metadata
+            title = meta.get("title", "Untitled")
+            date = meta.get("date", datetime.now().strftime("%Y-%m-%d"))
+            tags = meta.get("tags", [])
+            year = datetime.now().year
+            
+            # Read template
+            template_text = template_path.read_text(encoding="utf-8")
+            
+            # Render template with variables
+            variables = {
+                "title": title,
+                "date": date,
+                "content": content_html,
+                "year": year,
+                "tags": tags,
+                "unsubscribe_url": "{{ unsubscribe_url }}",
+            }
+            
+            rendered_html = render_simple_template(template_text, variables)
+            
+            # Write the individual post page
+            out_path.write_text(rendered_html, encoding="utf-8")
             print(f"  -> {out_path.relative_to(ROOT)}")
+            
+            # Track for listing
+            if is_newsletter:
+                dir_name = source_path.parent.name
+                match = re.match(r"(\d+)_(.+)", dir_name)
+                if match:
+                    newsletters.append({
+                        "number": match.group(1),
+                        "slug": match.group(2),
+                        "slug_with_num": dir_name,
+                        "title": title,
+                        "date": date,
+                    })
+            else:
+                dir_name = source_path.parent.name
+                match = re.match(r"(\d+)_(.+)", dir_name)
+                if match:
+                    blog_posts.append({
+                        "number": match.group(1),
+                        "slug": match.group(2),
+                        "slug_with_num": dir_name,
+                        "title": title,
+                        "date": date,
+                    })
+        else:
+            # Regular page - use pandoc with default template
+            # Pass out_rel to render_card so links are correct relative to the OUTPUT file
+            def replace_card(match):
+                return "\n\n" + render_card(match.group(1), projects, out_rel) + "\n\n"
+
+            expanded_body = CARD_RE.sub(replace_card, body)
+            full_markdown = (
+                f"---\n{raw_yaml}\n---\n{expanded_body}" if has_front else expanded_body
+            )
+
+            root_url = get_root_prefix(out_rel)
+
+            # Pandoc handles the entire template, including header/footer, and writes directly to disk
+            cmd = [
+                "pandoc",
+                "-f",
+                "markdown+yaml_metadata_block+raw_html",
+                "-t",
+                "html5",
+                "--standalone",
+                "--template",
+                str(DEFAULT_TEMPLATE),
+                "-V",
+                f"root_url={root_url}",
+                "-o",
+                str(out_path),
+            ]
+
+            proc = subprocess.run(
+                cmd, input=full_markdown.encode("utf-8"), capture_output=True
+            )
+
+            if proc.returncode != 0:
+                print(
+                    f"Error building {source_path}:\n{proc.stderr.decode('utf-8')}",
+                    file=sys.stderr,
+                )
+            else:
+                print(f"  -> {out_path.relative_to(ROOT)}")
+
+    # Sort newsletters and blog posts by number
+    newsletters.sort(key=lambda x: int(x["number"]))
+    blog_posts.sort(key=lambda x: int(x["number"]))
+
+    # Load previous state
+    state = load_listings_state()
+    
+    # Determine new items
+    newsletter_ids = [f"{n['number']}_{n['slug']}" for n in newsletters]
+    blog_ids = [f"{b['number']}_{b['slug']}" for b in blog_posts]
+    
+    new_newsletters = [n for n in newsletters if f"{n['number']}_{n['slug']}" not in state["newsletter"]]
+    new_blog_posts = [b for b in blog_posts if f"{b['number']}_{b['slug']}" not in state["blog"]]
+    
+    # Report findings
+    if new_newsletters:
+        print(f"\nFound {len(new_newsletters)} new newsletter(s) (total: {len(newsletters)})")
+        for n in new_newsletters:
+            print(f"  - {n['title']}")
+    else:
+        print(f"\nNo new newsletters (total: {len(newsletters)} already processed)")
+    
+    if new_blog_posts:
+        print(f"Found {len(new_blog_posts)} new blog post(s) (total: {len(blog_posts)})")
+        for b in new_blog_posts:
+            print(f"  - {b['title']}")
+    else:
+        print(f"No new blog posts (total: {len(blog_posts)} already processed)")
+
+    # Generate newsletter listing
+    newsletter_html = generate_listing_html(newsletters, "newsletter", "Newsletter")
+    newsletter_output = PUBLIC / "newsletter" / "index.html"
+    newsletter_output.parent.mkdir(parents=True, exist_ok=True)
+    newsletter_output.write_text(newsletter_html, encoding="utf-8")
+    print(f"\nGenerated listing: {newsletter_output}")
+
+    # Generate blog listing
+    blog_html = generate_listing_html(blog_posts, "blog", "Blog")
+    blog_output = PUBLIC / "blog" / "index.html"
+    blog_output.parent.mkdir(parents=True, exist_ok=True)
+    blog_output.write_text(blog_html, encoding="utf-8")
+    print(f"Generated listing: {blog_output}")
+
+    # Update state
+    state["newsletter"] = newsletter_ids
+    state["blog"] = blog_ids
+    save_listings_state(state)
 
 
 if __name__ == "__main__":
