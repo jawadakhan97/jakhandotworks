@@ -1,4 +1,29 @@
 #!/usr/bin/env python3
+"""
+Static Site Generator for Jawad A. Khan's Portfolio Website
+
+This module builds a static website using Pandoc for Markdown-to-HTML conversion.
+It supports:
+- Blog posts with automatic listing pages
+- Newsletter issues with subscription integration
+- Project showcase cards with customizable layouts
+- Research logs and about pages
+
+Usage:
+    python tools/build.py
+
+Dependencies:
+    - Python 3.8+
+    - PyYAML (pip install pyyaml)
+    - Pandoc (https://pandoc.org/installing.html)
+
+Directory Structure:
+    src/content/          - Markdown source files
+    src/templates/        - HTML templates
+    src/static/assets/    - CSS, images, and other static files
+    public/               - Generated output (compiled site)
+"""
+
 import html
 import json
 import os
@@ -8,6 +33,7 @@ import subprocess
 import sys
 from datetime import datetime
 from pathlib import Path
+from typing import Any, Dict, List, Optional, Tuple
 
 try:
     import yaml
@@ -17,21 +43,30 @@ except ImportError:
     )
     sys.exit(1)
 
+# =============================================================================
+# CONFIGURATION
+# =============================================================================
+
 ROOT = Path.cwd()
 CONTENT = (ROOT / "src" / "content").resolve()
 PUBLIC = ROOT / "public"
+
+# Template paths
 DEFAULT_TEMPLATE = ROOT / "src" / "templates" / "default.html"
 BLOG_TEMPLATE = ROOT / "src" / "templates" / "blog.html"
 NEWSLETTER_TEMPLATE = ROOT / "src" / "templates" / "newsletter.html"
+
+# State tracking file for incremental builds
 LISTINGS_STATE_FILE = ROOT / ".listings_state.json"
 
 # Content directories
 NEWSLETTER_DIR = CONTENT / "newsletter"
 BLOG_DIR = CONTENT / "blog"
 
-# UPDATED: Point to your static assets folder
+# Static assets source directory
 ASSETS_SRC = ROOT / "src" / "static" / "assets"
 
+# Regular expressions
 CARD_RE = re.compile(r"\{\{\s*card:\s*([A-Za-z0-9_-]+)\s*\}\}")
 FRONT_RE = re.compile(
     r"\A---\s*\n(.*?)\n(?:---|\.\.\.)\s*\n?(.*)\Z",
@@ -39,11 +74,34 @@ FRONT_RE = re.compile(
 )
 
 
-def esc(value):
+# =============================================================================
+# UTILITY FUNCTIONS
+# =============================================================================
+
+
+def esc(value: Any) -> str:
+    """
+    HTML-escape a value for safe inclusion in HTML output.
+
+    Args:
+        value: The value to escape (will be converted to string)
+
+    Returns:
+        HTML-escaped string with quotes handled
+    """
     return html.escape(str(value), quote=True)
 
 
-def truthy(value):
+def truthy(value: Any) -> bool:
+    """
+    Convert a value to boolean using common truthy string representations.
+
+    Args:
+        value: Any value to evaluate
+
+    Returns:
+        True if value is boolean True, or string in {'true', 'yes', 'on', '1'}
+    """
     if isinstance(value, bool):
         return value
     if value is None:
@@ -51,15 +109,34 @@ def truthy(value):
     return str(value).strip().lower() in {"true", "yes", "on", "1"}
 
 
-def split_front_matter(text):
-    text = text.lstrip("\ufeff")
+def split_front_matter(text: str) -> Tuple[str, str, bool]:
+    """
+    Split Markdown content into YAML front matter and body.
+
+    Args:
+        text: The full Markdown content including optional front matter
+
+    Returns:
+        Tuple of (yaml_string, body_string, has_front_matter)
+    """
+    text = text.lstrip("\ufeff")  # Remove BOM if present
     match = FRONT_RE.match(text)
     if not match:
         return "", text, False
     return match.group(1), match.group(2), True
 
 
-def parse_yaml(raw, path):
+def parse_yaml(raw: str, path: Path) -> Dict[str, Any]:
+    """
+    Parse YAML front matter safely.
+
+    Args:
+        raw: YAML string to parse
+        path: Source file path (for error reporting)
+
+    Returns:
+        Dictionary of parsed values, or empty dict on error
+    """
     try:
         data = yaml.safe_load(raw)
         return data if isinstance(data, dict) else {}
@@ -68,7 +145,16 @@ def parse_yaml(raw, path):
         return {}
 
 
-def as_list(value):
+def as_list(value: Any) -> List[str]:
+    """
+    Convert a value to a list of strings.
+
+    Args:
+        value: Single value or list/tuple to convert
+
+    Returns:
+        List of string representations
+    """
     if value is None:
         return []
     if isinstance(value, (list, tuple)):
@@ -76,7 +162,18 @@ def as_list(value):
     return [str(value)]
 
 
-def markdown_to_html(text):
+def markdown_to_html(text: str) -> str:
+    """
+    Convert Markdown text to HTML using Pandoc.
+
+    Falls back to simple paragraph wrapping if Pandoc is unavailable.
+
+    Args:
+        text: Markdown-formatted text
+
+    Returns:
+        HTML string
+    """
     text = str(text).strip()
     if not text:
         return ""
@@ -92,6 +189,7 @@ def markdown_to_html(text):
             return proc.stdout.decode("utf-8").strip()
     except FileNotFoundError:
         pass
+    # Fallback: wrap paragraphs in <p> tags
     escaped = esc(text)
     paragraphs = [
         part.strip() for part in re.split(r"\n\s*\n", escaped) if part.strip()
@@ -99,10 +197,17 @@ def markdown_to_html(text):
     return "".join(f"<p>{paragraph}</p>" for paragraph in paragraphs)
 
 
-def get_out_rel(source_path):
+def get_out_rel(source_path: Path) -> Path:
     """
-    Determines the output path relative to public/.
+    Determine the output path relative to public/.
+
     Example: src/content/about.md -> about/index.html
+
+    Args:
+        source_path: Path to source Markdown file
+
+    Returns:
+        Relative path for output HTML file
     """
     try:
         rel_path = source_path.relative_to(CONTENT)
@@ -117,8 +222,15 @@ def get_out_rel(source_path):
 
 def get_root_prefix(out_rel: Path) -> str:
     """
-    Calculates the relative path back to the root based on the OUTPUT file depth.
+    Calculate the relative path prefix to reach root from output location.
+
     Example: public/about/index.html (depth 1) -> ../
+
+    Args:
+        out_rel: Output path relative to public/
+
+    Returns:
+        Prefix string (e.g., "../", "../../", "./")
     """
     depth = len(out_rel.parts) - 1
     if depth == 0:
@@ -126,24 +238,52 @@ def get_root_prefix(out_rel: Path) -> str:
     return "../" * depth
 
 
-def page_url_for(target_source, current_out_rel):
-    """Calculates the relative link to another page based on output paths."""
+def page_url_for(target_source: Path, current_out_rel: Path) -> str:
+    """
+    Calculate relative link to another page based on output paths.
+
+    Args:
+        target_source: Source path of target page
+        current_out_rel: Output path of current page
+
+    Returns:
+        Relative URL string
+    """
     target_out_rel = get_out_rel(target_source)
     current_dir = current_out_rel.parent
     rel = os.path.relpath(target_out_rel, current_dir)
     return rel.replace(os.sep, "/")
 
 
-def normalize_url(url, current_out_rel):
-    """Normalizes absolute URLs (starting with /) to be relative to the current page."""
+def normalize_url(url: str, current_out_rel: Path) -> str:
+    """
+    Normalize absolute URLs to be relative to current page.
+
+    Args:
+        url: URL string (may be absolute starting with /)
+        current_out_rel: Output path of current page
+
+    Returns:
+        Normalized relative URL
+    """
     url = str(url)
     if url.startswith("/"):
         return get_root_prefix(current_out_rel) + url.lstrip("/")
     return url
 
 
-def load_listings_state():
-    """Load the state file tracking processed posts."""
+# =============================================================================
+# STATE MANAGEMENT FOR INCREMENTAL BUILDS
+# =============================================================================
+
+
+def load_listings_state() -> Dict[str, List[str]]:
+    """
+    Load the state file tracking processed blog posts and newsletters.
+
+    Returns:
+        Dictionary with 'newsletter' and 'blog' keys containing lists of processed IDs
+    """
     if LISTINGS_STATE_FILE.exists():
         try:
             return json.loads(LISTINGS_STATE_FILE.read_text(encoding="utf-8"))
@@ -152,46 +292,65 @@ def load_listings_state():
     return {"newsletter": [], "blog": []}
 
 
-def save_listings_state(state):
-    """Save the state file."""
+def save_listings_state(state: Dict[str, List[str]]) -> None:
+    """
+    Save the build state to track processed posts.
+
+    Args:
+        state: Dictionary with processed post IDs
+    """
     LISTINGS_STATE_FILE.write_text(json.dumps(state, indent=2), encoding="utf-8")
 
 
-def scan_content_directory(directory, content_type):
-    """Scan a content directory and return sorted list of posts."""
+# =============================================================================
+# CONTENT SCANNING AND TEMPLATE RENDERING
+# =============================================================================
+
+
+def scan_content_directory(directory: Path, content_type: str) -> List[Dict[str, str]]:
+    """
+    Scan a content directory and return sorted list of posts.
+
+    Args:
+        directory: Path to content directory (blog/ or newsletter/)
+        content_type: Type identifier for logging
+
+    Returns:
+        List of post metadata dictionaries sorted by number
+    """
     posts = []
-    
+
     if not directory.exists():
         return posts
-    
+
     # Find all numbered directories (e.g., 1_first_newsletter, 2_second_post)
     pattern = re.compile(r"(\d+)_(.+?)/index\.md$")
-    
+
     for md_file in directory.rglob("index.md"):
         # Skip the main index.md
         if md_file.parent == directory:
             continue
-        
+
         rel_path = md_file.relative_to(CONTENT)
         match = pattern.search(str(rel_path))
-        
+
         if match:
             issue_num = match.group(1)
             slug = match.group(2)
-            
+
             meta, _ = split_front_matter(md_file.read_text(encoding="utf-8"))
             try:
                 meta = yaml.safe_load(meta) or {}
             except yaml.YAMLError:
                 meta = {}
-            
+
             # Skip drafts
             if meta.get("draft", False) is True:
                 continue
-            
+
             title = meta.get("title", f"Issue {issue_num}")
             date = meta.get("date", "")
-            
+
             posts.append({
                 "number": issue_num,
                 "slug": slug,
@@ -199,14 +358,43 @@ def scan_content_directory(directory, content_type):
                 "title": title,
                 "date": date,
             })
-    
+
     # Sort by number
     posts.sort(key=lambda x: int(x["number"]))
     return posts
 
 
-def render_simple_template(template_text, variables):
-    """Simple template renderer for {{ variable }} syntax."""
+def render_simple_template(template_text: str, variables: Dict[str, Any]) -> str:
+    """
+    Render a template using {{ variable }} and {% for %}/{% if %} syntax.
+
+    Args:
+        template_text: Template string with variable placeholders
+        variables: Dictionary of variable names to values
+
+    Returns:
+        Rendered HTML string
+    """
+    result = template_text
+
+    # First handle for loops for tags (before single variable replacement)
+    if "tags" in variables and variables["tags"]:
+        for_pattern = re.compile(r'\{%\s*for\s+tag\s+in\s+tags\s*%\}(.*?)\{%\s*endfor\s*%\}', re.S)
+        if for_pattern.search(result):
+            items_html = "".join(f'<span class="blog-tag">{esc(tag)}</span>' for tag in variables["tags"])
+            result = for_pattern.sub(items_html, result)
+
+    # Handle simple if conditions
+    if_cond_pattern = re.compile(r"\{%\s*if\s+(\w+)\s*%\}(.*?)\{%\s*endif\s*%\}", re.S)
+
+    def replace_if(match):
+        var_name = match.group(1)
+        content = match.group(2)
+        if variables.get(var_name):
+            return content
+        return ""
+
+    result = if_cond_pattern.sub(replace_if, result)
     result = template_text
     
     # First handle for loops for tags (before single variable replacement)
