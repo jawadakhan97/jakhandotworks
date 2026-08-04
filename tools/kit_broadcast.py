@@ -32,6 +32,13 @@ except ImportError:
     sys.stderr.write("PyYAML is required. Install with: pip install pyyaml\n")
     sys.exit(1)
 
+try:
+    from dotenv import load_dotenv
+    # Try to load .env file - works with both direct python and uv run --env-file
+    load_dotenv()
+except ImportError:
+    pass  # python-dotenv is optional; uv run --env-file will handle loading
+
 # Configuration
 ROOT = Path.cwd()
 CONTENT_DIR = ROOT / "src" / "content"
@@ -297,22 +304,21 @@ def broadcast_to_kit(subject, html_content, subscriber_form_id=None):
     
     site_url = os.environ.get("SITE_URL", "https://jakhandotworks.com")
     
+    # v4 API expects flat structure, not nested under "broadcast"
     payload = {
-        "broadcast": {
-            "subject": subject,
-            "body_html": html_content,
-            "form_ids": [int(form_id)],
-            "reply_email": "jawad_khan@outlook.com",
-            "sender_email": "jawad_khan@outlook.com",
-            "sender_name": "Jawad A. Khan",
-        }
+        "subject": subject,
+        "content": html_content,
+        "form_ids": [int(form_id)],
+        "reply_email": "jawad_khan@outlook.com",
+        "sender_email": "jawad_khan@outlook.com",
+        "sender_name": "Jawad A. Khan",
     }
     
     url = f"{KIT_API_BASE}/broadcasts"
     
     headers = {
         "Content-Type": "application/json",
-        "Authorization": f"Bearer {api_key}",
+        "X-Kit-Api-Key": api_key,  # v4 API uses X-Kit-Api-Key header
     }
     
     try:
@@ -425,17 +431,16 @@ def main():
             print("Method: POST")
             print("Headers:")
             print("  Content-Type: application/json")
-            print("  Authorization: Bearer [KIT_API_KEY]")
+            print("  X-Kit-Api-Key: [KIT_API_KEY]")
             print("\nPayload:")
+            form_id = os.environ.get("KIT_FORM_ID")
             payload_example = {
-                "broadcast": {
-                    "subject": subject,
-                    "body_html": html_content,
-                    "form_ids": [int(form_id)] if (form_id := os.environ.get("KIT_FORM_ID")) else ["YOUR_FORM_ID"],
-                    "reply_email": "jawad_khan@outlook.com",
-                    "sender_email": "jawad_khan@outlook.com",
-                    "sender_name": "Jawad A. Khan",
-                }
+                "subject": subject,
+                "content": html_content,
+                "form_ids": [int(form_id)] if form_id else ["YOUR_FORM_ID"],
+                "reply_email": "jawad_khan@outlook.com",
+                "sender_email": "jawad_khan@outlook.com",
+                "sender_name": "Jawad A. Khan",
             }
             print(json.dumps(payload_example, indent=2))
             print("\n--- End Example Payload ---")
