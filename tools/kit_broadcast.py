@@ -59,7 +59,7 @@ def load_sent_log():
         try:
             with open(SENT_LOG_FILE, "r", encoding="utf-8") as f:
                 return json.load(f)
-        except (json.JSONDecodeError, IOError):
+        except json.JSONDecodeError, IOError:
             pass
     return {"sent_items": []}
 
@@ -77,9 +77,12 @@ def is_already_sent(content_type, file_path, commit_hash):
     """Check if this content has already been sent."""
     log_data = load_sent_log()
     file_str = str(file_path)
-    
+
     for item in log_data.get("sent_items", []):
-        if item.get("content_type") == content_type and item.get("file_path") == file_str:
+        if (
+            item.get("content_type") == content_type
+            and item.get("file_path") == file_str
+        ):
             if item.get("commit_hash") == commit_hash:
                 return True
     return False
@@ -88,15 +91,17 @@ def is_already_sent(content_type, file_path, commit_hash):
 def mark_as_sent(content_type, file_path, commit_hash, broadcast_id=None):
     """Mark content as sent in the log."""
     log_data = load_sent_log()
-    
-    log_data["sent_items"].append({
-        "content_type": content_type,
-        "file_path": str(file_path),
-        "commit_hash": commit_hash,
-        "broadcast_id": broadcast_id,
-        "sent_at": datetime.now().isoformat()
-    })
-    
+
+    log_data["sent_items"].append(
+        {
+            "content_type": content_type,
+            "file_path": str(file_path),
+            "commit_hash": commit_hash,
+            "broadcast_id": broadcast_id,
+            "sent_at": datetime.now().isoformat(),
+        }
+    )
+
     save_sent_log(log_data)
 
 
@@ -104,8 +109,7 @@ def get_current_commit_hash():
     """Get the current git commit hash."""
     try:
         result = subprocess.run(
-            ["git", "rev-parse", "HEAD"],
-            capture_output=True, text=True, check=True
+            ["git", "rev-parse", "HEAD"], capture_output=True, text=True, check=True
         )
         return result.stdout.strip()
     except subprocess.CalledProcessError:
@@ -123,7 +127,7 @@ def get_git_commit_info(commit_hash=None):
             cmd = ["git", "diff", "--name-only", "HEAD~1", "HEAD"]
         except subprocess.CalledProcessError:
             cmd = ["git", "show", "--name-only", "--format=", "HEAD"]
-    
+
     try:
         result = subprocess.run(cmd, capture_output=True, text=True, check=True)
         return result.stdout.strip().split("\n")
@@ -143,9 +147,9 @@ def detect_content_type(changed_files, force_type=None):
     results = []
 
     if force_type:
-        pattern = re.compile(r'src/content/' + force_type + r'/(\d+)_(.+?)/index\.md$')
+        pattern = re.compile(r"src/content/" + force_type + r"/(\d+)_(.+?)/index\.md$")
     else:
-        pattern = re.compile(r'src/content/(newsletter|blog)/(\d+)_(.+?)/index\.md$')
+        pattern = re.compile(r"src/content/(newsletter|blog)/(\d+)_(.+?)/index\.md$")
 
     for file_path in changed_files:
         match = pattern.match(file_path)
@@ -162,22 +166,36 @@ def detect_content_type(changed_files, force_type=None):
             full_path = ROOT / file_path
 
             if full_path.exists():
-                file_content = full_path.read_text(encoding='utf-8')
-                front_match = re.match(r'\A---\s*\n(.*?)\n(?:---|\.\.\.)\s*\n?', file_content, re.S)
+                file_content = full_path.read_text(encoding="utf-8")
+                front_match = re.match(
+                    r"\A---\s*\n(.*?)\n(?:---|\.\.\.)\s*\n?", file_content, re.S
+                )
                 if front_match:
                     try:
                         meta = yaml.safe_load(front_match.group(1)) or {}
 
-                        if meta.get('draft', False) is True:
-                            print(f'  Skipping {file_path}: marked as draft')
+                        if meta.get("draft", False) is True:
+                            print(f"  Skipping {file_path}: marked as draft")
                             continue
 
-                        title = meta.get('title', f'Issue {issue_num}')
-                        results.append((content_type, full_path, issue_num, title, meta))
+                        title = meta.get("title", f"Issue {issue_num}")
+                        results.append(
+                            (content_type, full_path, issue_num, title, meta)
+                        )
                     except yaml.YAMLError:
-                        results.append((content_type, full_path, issue_num, f'Issue {issue_num}', {}))
+                        results.append(
+                            (
+                                content_type,
+                                full_path,
+                                issue_num,
+                                f"Issue {issue_num}",
+                                {},
+                            )
+                        )
                 else:
-                    results.append((content_type, full_path, issue_num, f'Issue {issue_num}', {}))
+                    results.append(
+                        (content_type, full_path, issue_num, f"Issue {issue_num}", {})
+                    )
 
     return results
 
@@ -185,17 +203,19 @@ def detect_content_type(changed_files, force_type=None):
 def parse_markdown_content(md_path):
     """Parse markdown file and extract front matter and body."""
     content = md_path.read_text(encoding="utf-8")
-    
-    front_match = re.match(r"\A---\s*\n(.*?)\n(?:---|\.\.\.)\s*\n?(.*)\Z", content, re.S)
+
+    front_match = re.match(
+        r"\A---\s*\n(.*?)\n(?:---|\.\.\.)\s*\n?(.*)\Z", content, re.S
+    )
     if not front_match:
         return {}, content
-    
+
     try:
         meta = yaml.safe_load(front_match.group(1)) or {}
     except yaml.YAMLError as e:
         sys.stderr.write(f"Warning: YAML parsing error: {e}\n")
         meta = {}
-    
+
     body = front_match.group(2).strip()
     return meta, body
 
@@ -214,7 +234,7 @@ def convert_markdown_to_html(markdown_text):
             return proc.stdout.decode("utf-8").strip()
     except FileNotFoundError:
         sys.stderr.write("Warning: pandoc not found, using basic conversion\n")
-    
+
     escaped = html.escape(markdown_text)
     paragraphs = [p.strip() for p in re.split(r"\n\s*\n", escaped) if p.strip()]
     return "".join(f"<p>{p}</p>" for p in paragraphs)
@@ -223,30 +243,34 @@ def convert_markdown_to_html(markdown_text):
 def render_template(template_path, variables):
     """Simple template renderer for {{ variable }} syntax."""
     template = template_path.read_text(encoding="utf-8")
-    
+
     for key, value in variables.items():
         if isinstance(value, str):
             template = template.replace("{{ " + key + " }}", value)
         elif isinstance(value, int):
             template = template.replace("{{ " + key + " }}", str(value))
-    
+
     if_cond_pattern = re.compile(r"\{%\s*if\s+(\w+)\s*%\}(.*?)\{%\s*endif\s*%\}", re.S)
-    
+
     def replace_if(match):
         var_name = match.group(1)
         content = match.group(2)
         if variables.get(var_name):
             return content
         return ""
-    
+
     template = if_cond_pattern.sub(replace_if, template)
-    
+
     if "tags" in variables and variables["tags"]:
-        tags_html = "".join('<span class="blog-tag">' + html.escape(str(tag)) + '</span>' 
-                           for tag in variables["tags"])
-        
-        for_pattern = re.compile(r'\{%\s*for\s+tag\s+in\s+tags\s*%\}(.*?)\{%\s*endfor\s*%\}', re.S)
-        
+        tags_html = "".join(
+            '<span class="blog-tag">' + html.escape(str(tag)) + "</span>"
+            for tag in variables["tags"]
+        )
+
+        for_pattern = re.compile(
+            r"\{%\s*for\s+tag\s+in\s+tags\s*%\}(.*?)\{%\s*endfor\s*%\}", re.S
+        )
+
         def replace_for(match):
             item_template = match.group(1)
             result = []
@@ -254,16 +278,16 @@ def render_template(template_path, variables):
                 item_html = item_template.replace("{{ tag }}", html.escape(str(tag)))
                 result.append(item_html)
             return "".join(result)
-        
+
         template = for_pattern.sub(replace_for, template)
-    
+
     return template
 
 
 def build_newsletter_html(meta, body, template_path):
     """Build HTML email content from markdown using email.html template."""
     content_html = convert_markdown_to_html(body)
-    
+
     variables = {
         "title": meta.get("title", "Newsletter"),
         "date": meta.get("date", datetime.now().strftime("%Y-%m-%d")),
@@ -271,14 +295,14 @@ def build_newsletter_html(meta, body, template_path):
         "year": datetime.now().year,
         "unsubscribe_url": "{{ unsubscribe_url }}",
     }
-    
+
     return render_template(EMAIL_TEMPLATE, variables)
 
 
 def build_blog_html(meta, body, template_path):
     """Build HTML blog post content from markdown."""
     content_html = convert_markdown_to_html(body)
-    
+
     variables = {
         "title": meta.get("title", "Blog Post"),
         "date": meta.get("date", datetime.now().strftime("%Y-%m-%d")),
@@ -286,7 +310,7 @@ def build_blog_html(meta, body, template_path):
         "year": datetime.now().year,
         "tags": meta.get("tags", []),
     }
-    
+
     return render_template(template_path, variables)
 
 
@@ -296,15 +320,14 @@ def broadcast_to_kit(subject, html_content, subscriber_form_id=None):
     if not api_key:
         sys.stderr.write("Error: KIT_API_KEY environment variable not set\n")
         return False
-    
+
     form_id = subscriber_form_id or os.environ.get("KIT_FORM_ID")
     if not form_id:
         sys.stderr.write("Error: KIT_FORM_ID environment variable not set\n")
         return False
-    
-    site_url = os.environ.get("SITE_URL", "https://jakhandotworks.com")
-    
-    # v4 API expects flat structure, not nested under "broadcast"
+
+    site_url = os.environ.get("SITE_URL")
+
     payload = {
         "subject": subject,
         "content": html_content,
@@ -313,18 +336,18 @@ def broadcast_to_kit(subject, html_content, subscriber_form_id=None):
         "sender_email": "jawad_khan@outlook.com",
         "sender_name": "Jawad A. Khan",
     }
-    
+
     url = f"{KIT_API_BASE}/broadcasts"
-    
+
     headers = {
+        "X-Kit-Api-Key": f"{api_key}",
         "Content-Type": "application/json",
-        "X-Kit-Api-Key": api_key,  # v4 API uses X-Kit-Api-Key header
     }
-    
+
     try:
         data = json.dumps(payload).encode("utf-8")
         req = Request(url, data=data, headers=headers, method="POST")
-        
+
         with urlopen(req) as response:
             result = json.loads(response.read().decode("utf-8"))
             broadcast_id = result.get("broadcast", {}).get("id")
@@ -332,7 +355,7 @@ def broadcast_to_kit(subject, html_content, subscriber_form_id=None):
             print(f"  Subject: {subject}")
             print(f"  Sent to form: {form_id}")
             return True
-            
+
     except HTTPError as e:
         error_body = e.read().decode("utf-8") if e.fp else ""
         sys.stderr.write(f"HTTP Error {e.code}: {e.reason}\n")
@@ -351,51 +374,49 @@ def main():
         description="Broadcast newsletter/blog posts via Kit API"
     )
     parser.add_argument(
-        "--newsletter", action="store_true",
-        help="Force process as newsletter"
+        "--newsletter", action="store_true", help="Force process as newsletter"
     )
     parser.add_argument(
-        "--blog", action="store_true",
-        help="Force process as blog post"
+        "--blog", action="store_true", help="Force process as blog post"
     )
     parser.add_argument(
-        "--commit-hash", type=str,
-        help="Specific commit hash to process"
+        "--commit-hash", type=str, help="Specific commit hash to process"
     )
     parser.add_argument(
-        "--dry-run", action="store_true",
-        help="Show what would be sent without actually sending"
+        "--dry-run",
+        action="store_true",
+        help="Show what would be sent without actually sending",
     )
-    
+
     args = parser.parse_args()
-    
+
     changed_files = get_git_commit_info(args.commit_hash)
-    
+
     if not changed_files:
         print("No changed files detected or unable to read git history.")
         return 0
-    
+
     force_type = None
     if args.newsletter:
         force_type = "newsletter"
     elif args.blog:
         force_type = "blog"
-    
+
     commit_hash = args.commit_hash or get_current_commit_hash()
-    
+
     results = detect_content_type(changed_files, force_type)
-    
+
     if not results:
         print("No newsletter or blog post changes detected.")
         print("Changed files:")
         for f in changed_files:
             print(f"  - {f}")
         return 0
-    
+
     success_count = 0
     fail_count = 0
     skip_count = 0
-    
+
     for content_type, file_path, issue_num, title, meta in results:
         if is_already_sent(content_type, file_path, commit_hash):
             print(f"\nSkipping {content_type} (already sent):")
@@ -403,14 +424,14 @@ def main():
             print(f"  Issue: {issue_num}")
             skip_count += 1
             continue
-        
+
         print(f"\nDetected {content_type} update:")
         print(f"  File: {file_path}")
         print(f"  Issue: {issue_num}")
         print(f"  Title: {title}")
-        
+
         meta, body = parse_markdown_content(file_path)
-        
+
         if content_type == "newsletter":
             template_path = NEWSLETTER_TEMPLATE
             html_content = build_newsletter_html(meta, body, template_path)
@@ -419,11 +440,11 @@ def main():
             template_path = BLOG_TEMPLATE
             html_content = build_blog_html(meta, body, template_path)
             subject = f"[Blog] {title}"
-        
+
         print(f"\nPrepared {content_type}:")
         print(f"  Subject: {subject}")
         print(f"  HTML length: {len(html_content)} characters")
-        
+
         if args.dry_run:
             print("\n[DRY RUN] Would send to Kit API but skipping...")
             print("\n--- Example Broadcast POST Payload ---")
@@ -455,7 +476,7 @@ def main():
                 success_count += 1
             else:
                 fail_count += 1
-    
+
     print(f"\n--- Summary ---")
     print(f"Processed: {success_count + fail_count} item(s)")
     print(f"Successful: {success_count}")
@@ -463,7 +484,7 @@ def main():
         print(f"Skipped (already sent): {skip_count}")
     if fail_count > 0:
         print(f"Failed: {fail_count}")
-    
+
     return 0 if fail_count == 0 else 1
 
 
