@@ -43,7 +43,7 @@ EMAIL_TEMPLATE = ROOT / "src" / "templates" / "email.html"
 SENT_LOG_FILE = ROOT / ".kit_sent_log.json"
 
 # Kit API Configuration
-KIT_API_BASE = "https://api.kit.com/v2"
+KIT_API_BASE = "https://api.kit.com/v4"
 
 
 def load_sent_log():
@@ -420,7 +420,26 @@ def main():
         
         if args.dry_run:
             print("\n[DRY RUN] Would send to Kit API but skipping...")
-            print("\nPreview (first 500 chars):")
+            print("\n--- Example Broadcast POST Payload ---")
+            print(f"URL: {KIT_API_BASE}/broadcasts")
+            print("Method: POST")
+            print("Headers:")
+            print("  Content-Type: application/json")
+            print("  Authorization: Bearer [KIT_API_KEY]")
+            print("\nPayload:")
+            payload_example = {
+                "broadcast": {
+                    "subject": subject,
+                    "body_html": html_content,
+                    "form_ids": [int(form_id)] if (form_id := os.environ.get("KIT_FORM_ID")) else ["YOUR_FORM_ID"],
+                    "reply_email": "jawad_khan@outlook.com",
+                    "sender_email": "jawad_khan@outlook.com",
+                    "sender_name": "Jawad A. Khan",
+                }
+            }
+            print(json.dumps(payload_example, indent=2))
+            print("\n--- End Example Payload ---")
+            print(f"\nHTML Content Preview (first 500 chars):")
             print(html_content[:500])
             success_count += 1
         else:
