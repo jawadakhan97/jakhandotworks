@@ -1,64 +1,42 @@
-# Newsletter and Blog Broadcast System
+# Newsletter & Blog Broadcast System
 
-This system automatically broadcasts newsletter and blog posts via the Kit (ConvertKit) API when you commit changes to your content files.
+This system automatically broadcasts newsletters and blog posts via the Kit (ConvertKit) API when you commit changes to your content directories.
 
 ## Overview
 
-The system consists of:
+The broadcast system consists of:
 
-1. **`tools/kit_broadcast.py`** - Main Python script that:
-   - Detects new/modified newsletter or blog posts from git commits
-   - Renders HTML using templates in `src/templates/`
-   - Sends broadcast emails via the Kit API
+1. **`kit_broadcast.py`** - Main Python script that detects commits and sends broadcasts
+2. **`git-post-commit-hook.sh`** - Git hook that triggers the broadcast script
+3. **`generate_listings.py`** - Generates archive listing pages for newsletters and blogs
+4. **Templates** - HTML templates in `src/templates/` for styling emails and posts
 
-2. **`tools/git-post-commit-hook.sh`** - Git hook script for automatic triggering
+## Features
 
-3. **Templates**:
-   - `src/templates/newsletter.html` - Email newsletter template
-   - `src/templates/blog.html` - Blog post template
+### Draft Control
+- Add `draft: true` to front matter to prevent accidental sending
+- Only posts with `draft: false` or no draft field will be broadcast
 
-## File Structure
-
-```
-src/content/newsletter/NUM_TITLE/index.md  # Newsletter content
-src/content/blog/NUM_TITLE/index.md        # Blog post content
-src/templates/newsletter.html              # Newsletter HTML template
-src/templates/blog.html                    # Blog HTML template
-tools/kit_broadcast.py                     # Broadcast script
-tools/git-post-commit-hook.sh              # Git hook script
-```
-
-## Content Format
-
-### Newsletter Example (`src/content/newsletter/1_my_newsletter/index.md`)
-
-```markdown
+```yaml
 ---
-title: "My Newsletter Title"
+title: "My Post"
 date: 2026-08-05
+draft: false  # Set to true to prevent sending
 ---
-
-Your newsletter content here in Markdown format.
-
-- Supports lists
-- **Bold** and *italic* text
-- [Links](https://example.com)
-- And more!
 ```
 
-### Blog Post Example (`src/content/blog/1_my_post/index.md`)
+### Duplicate Prevention
+- Tracks sent items in `.kit_sent_log.json`
+- Prevents double-sending the same content from the same commit
+- Shows skip count in summary output
 
-```markdown
----
-title: "My Blog Post Title"
-date: 2026-08-05
-tags:
-  - technology
-  - programming
----
+### Local Testing
+- Use `--dry-run` flag to test without sending
+- Preview rendered HTML before broadcasting
 
-Your blog post content here in Markdown format.
-```
+### Multiple Posts
+- Handles multiple newsletter/blog posts in a single commit
+- Processes all matching files detected
 
 ## Setup
 
@@ -66,182 +44,175 @@ Your blog post content here in Markdown format.
 
 ```bash
 pip install pyyaml
+# Optional: for better markdown conversion
+brew install pandoc  # macOS
+apt-get install pandoc  # Linux
 ```
 
-Note: For best markdown conversion, also install pandoc:
-- macOS: `brew install pandoc`
-- Linux: `sudo apt-get install pandoc`
-- Windows: Download from https://pandoc.org/installing.html
-
-### 2. Configure Environment Variables
-
-Set these environment variables (add to your `.bashrc`, `.zshrc`, or CI/CD config):
+### 2. Set Environment Variables
 
 ```bash
-export KIT_API_KEY="your_kit_api_key_here"
-export KIT_FORM_ID="your_subscriber_form_id"
+export KIT_API_KEY="your_kit_api_key"
+export KIT_FORM_ID="your_form_id"
 export SITE_URL="https://jakhandotworks.com"
 ```
 
-### 3. Get Your Kit API Credentials
+Add these to your shell profile (`~/.bashrc`, `~/.zshrc`) for persistence.
 
-1. Log into your Kit (ConvertKit) account
-2. Go to Settings → Advanced → API Keys
-3. Create a new API key
-4. Note your Form ID from the Forms section
-
-### 4. Install Git Hook (Optional for Automatic Broadcasting)
-
-To automatically broadcast on every commit:
+### 3. Install Git Hook
 
 ```bash
-# Copy the hook script
 cp tools/git-post-commit-hook.sh .git/hooks/post-commit
-
-# Make it executable
 chmod +x .git/hooks/post-commit
 ```
 
-## Usage
+### 4. Test Locally First
 
-### Manual Broadcasting
-
-Run the broadcast script manually:
+Before enabling automatic broadcasts:
 
 ```bash
-# Auto-detect content type from last commit
-python tools/kit_broadcast.py
-
-# Force process as newsletter
-python tools/kit_broadcast.py --newsletter
-
-# Force process as blog post
-python tools/kit_broadcast.py --blog
-
-# Process a specific commit
-python tools/kit_broadcast.py --commit-hash abc123
-
-# Test without sending (dry run) - RECOMMENDED BEFORE FIRST USE
+# Test without sending
 python tools/kit_broadcast.py --dry-run
 
-# Combine options
-python tools/kit_broadcast.py --newsletter --dry-run
-python tools/kit_broadcast.py --blog --commit-hash abc123 --dry-run
-```
-
-### Testing Locally (Recommended Before Using Kit API)
-
-**Always test with `--dry-run` first** to see what would be sent without actually sending:
-
-```bash
-# Test the most recent commit
-python tools/kit_broadcast.py --dry-run
-
-# Test a specific commit
-python tools/kit_broadcast.py --commit-hash <hash> --dry-run
-
-# Force test as newsletter or blog
+# Test specific post types
 python tools/kit_broadcast.py --newsletter --dry-run
 python tools/kit_broadcast.py --blog --dry-run
 ```
 
-The dry run will show you:
-- Which files were detected
-- The email subject line
-- HTML content length
-- A preview of the rendered HTML (first 500 characters)
+### 5. Generate Listing Pages
 
-This is perfect for verifying your templates and content formatting before connecting to the Kit API.
+After building your site, generate archive listings:
 
-### Automatic Broadcasting (with Git Hook)
+```bash
+python tools/generate_listings.py
+```
 
-Once you've tested and are ready for automatic broadcasting:
+Or add to your build process.
 
-1. Set your environment variables:
-   ```bash
-   export KIT_API_KEY="your_kit_api_key_here"
-   export KIT_FORM_ID="your_subscriber_form_id"
-   export SITE_URL="https://jakhandotworks.com"
-   ```
+## Usage
 
-2. Install the git hook:
-   ```bash
-   cp tools/git-post-commit-hook.sh .git/hooks/post-commit
-   chmod +x .git/hooks/post-commit
-   ```
+### Automatic Broadcasting
 
-3. Commit your content:
-   ```bash
-   git add src/content/newsletter/2_my_update/index.md
-   git commit -m "Add new newsletter"
-   ```
+Once the git hook is installed, every commit that modifies files in:
+- `src/content/newsletter/NUM_TITLE/index.md`
+- `src/content/blog/NUM_TITLE/index.md`
 
-The hook will automatically detect the content and trigger the broadcast.
+Will trigger an automatic broadcast (if not marked as draft).
 
-## Template Variables
+### Manual Broadcasting
 
-### Newsletter Template (`src/templates/newsletter.html`)
+```bash
+# Broadcast all detected changes
+python tools/kit_broadcast.py
 
-- `{{ title }}` - Newsletter title from front matter
-- `{{ date }}` - Publication date
-- `{{ content }}` - HTML-converted markdown content
-- `{{ year }}` - Current year (for copyright)
-- `{{ unsubscribe_url }}` - Kit's unsubscribe link placeholder
+# Force newsletter mode
+python tools/kit_broadcast.py --newsletter
 
-### Blog Template (`src/templates/blog.html`)
+# Force blog mode
+python tools/kit_broadcast.py --blog
 
-- `{{ title }}` - Blog post title from front matter
-- `{{ date }}` - Publication date
-- `{{ content }}` - HTML-converted markdown content
-- `{{ year }}` - Current year (for copyright)
-- `{% if tags %}...{% endif %}` - Conditional tag display
+# Process specific commit
+python tools/kit_broadcast.py --commit-hash abc123
 
-## How It Works
+# Dry run (no actual sending)
+python tools/kit_broadcast.py --dry-run
+```
 
-1. **Git Commit**: You commit a new/modified `index.md` file in either:
-   - `src/content/newsletter/NUM_TITLE/`
-   - `src/content/blog/NUM_TITLE/`
+## Content Format
 
-2. **Detection**: The script scans the commit for matching file patterns
+### Newsletter Example
 
-3. **Rendering**: 
-   - Parses markdown front matter (YAML)
-   - Converts markdown body to HTML
-   - Fills template with content
+```markdown
+---
+title: "August Updates"
+date: 2026-08-05
+draft: false
+---
 
-4. **Broadcasting**:
-   - Creates a broadcast via Kit API v2
-   - Sends to your specified form/subscriber list
+Welcome to this month's newsletter!
+
+Here are the latest updates...
+```
+
+### Blog Post Example
+
+```markdown
+---
+title: "Building a Broadcast System"
+date: 2026-08-05
+draft: false
+tags:
+  - development
+  - automation
+---
+
+Today I'm going to show you how...
+```
+
+## Limits & Considerations
+
+### Kit API Limits
+- Check your Kit plan for broadcast limits
+- Rate limiting may apply for frequent sends
+- Form ID must have active subscribers
+
+### Potential Issues
+
+1. **Single-commit repositories**: The first commit may not trigger properly if there's no previous commit to diff against.
+
+2. **Draft detection**: Only checks top-level front matter. Ensure `draft:` is at the top.
+
+3. **Multiple posts in one commit**: All non-draft posts will be sent. Consider separate commits for different broadcasts.
+
+4. **Template rendering**: Templates use simple `{{ variable }}` syntax. Complex logic requires template modification.
+
+5. **Markdown conversion**: Without pandoc, falls back to basic paragraph conversion. Install pandoc for best results.
+
+6. **Git hook failures**: If the script fails, it won't block your commit but broadcasts won't send. Check logs.
+
+### Error Handling
+
+- Missing API key: Script exits with error message
+- Invalid form ID: HTTP error returned by Kit API
+- Network issues: Caught and reported, script continues
+
+## Benefits
+
+1. **Automated workflow**: Write content, commit, and broadcast automatically
+2. **Safety controls**: Draft flag prevents accidental sends
+3. **Duplicate protection**: Sent log prevents double-broadcasting
+4. **Local testing**: Dry-run mode for preview before sending
+5. **Consistent styling**: Templates ensure brand consistency
+6. **Archive generation**: Automatic listing pages for published content
 
 ## Troubleshooting
 
-### "KIT_API_KEY environment variable not set"
+### No broadcasts detected
+- Verify file path matches pattern: `src/content/newsletter/1_title/index.md`
+- Check that `index.md` has valid YAML front matter
+- Run with `--dry-run` to see detected files
 
-Ensure you've exported the environment variable:
-```bash
-export KIT_API_KEY="your_key"
-```
+### Draft posts being sent
+- Ensure `draft: false` (not `"false"` as string)
+- Check YAML syntax is valid
 
-### "pandoc not found"
+### Already sent messages appearing
+- The sent log is per-commit. Rebasing or amending commits may reset tracking.
+- Manually edit `.kit_sent_log.json` if needed
 
-Install pandoc for better markdown conversion, or the script will use basic paragraph conversion.
+### Template rendering issues
+- Verify template files exist in `src/templates/`
+- Check variable names match between template and script
 
-### No content detected
+## Files
 
-Verify your file path matches the pattern:
-- `src/content/newsletter/1_slug/index.md`
-- `src/content/blog/1_slug/index.md`
+- `tools/kit_broadcast.py` - Main broadcast script
+- `tools/generate_listings.py` - Archive page generator
+- `tools/git-post-commit-hook.sh` - Git hook installer
+- `src/templates/newsletter.html` - Email template
+- `src/templates/blog.html` - Blog post template
+- `.kit_sent_log.json` - Sent items tracking (auto-generated)
 
-The folder name must start with a number followed by an underscore.
+## Support
 
-## API Reference
-
-The script uses Kit API v2:
-- Endpoint: `POST https://api.kit.com/v2/broadcasts`
-- Documentation: https://developers.kit.com/v2/reference/create-a-broadcast
-
-## Security Notes
-
-- Never commit your API keys to version control
-- Use environment variables or a secrets manager
-- The git hook exits with code 0 even on failure to avoid blocking commits
+For Kit API issues, refer to: https://developers.kit.com/v2/
