@@ -1,61 +1,53 @@
-(public)
-public/dist/
-public/build/
+```
+# Compiled and build artifacts
+*.pyc
+__pycache__/
+
+# Dependencies
+.venv/
+venv/
+
+# Logs and temp files
 *.log
 *.tmp
 *.swp
-.DS_Store
-Thumbs.db
-node_modules/
-.npm/
-.yarn/
-.cache/
-coverage/
-htmlcov/
-.coverage
+
+# Environment
 .env
 .env.local
 .env.*
-.pytest_cache/
-.mypy_cache/
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-*.class
-*.o
-*.obj
-*.so
-*.dll
-*.exe
-*.out
-target/
-.gradle/
-build/
-dist/
-tmp/
-temp/
+
+# Editors
 .vscode/
 .idea/
-*.zip
-*.gz
-*.tar
-*.tgz
-*.bz2
-*.xz
-*.7z
-*.rar
-*.zst
-*.lz4
-*.lzh
-*.cab
-*.arj
-*.rpm
-*.deb
-*.Z
-*.lz
-*.lzo
-*.tar.gz
-*.tar.bz2
-*.tar.xz
-*.tar.zst
+
+# Coverage reports
+coverage/
+htmlcov/
+.coverage
+
+# Python specific
+*.pyc
+__pycache__/
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg-info/
+.eggs/
+
+# Build directories
+build/
+dist/
+*.egg
+
+# Cache directories
+.mypy_cache/
+.pytest_cache/
+.tox/
+.hypothesis/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+```
