@@ -39,6 +39,7 @@ NEWSLETTER_DIR = CONTENT_DIR / "newsletter"
 BLOG_DIR = CONTENT_DIR / "blog"
 NEWSLETTER_TEMPLATE = ROOT / "src" / "templates" / "newsletter.html"
 BLOG_TEMPLATE = ROOT / "src" / "templates" / "blog.html"
+EMAIL_TEMPLATE = ROOT / "src" / "templates" / "email.html"
 SENT_LOG_FILE = ROOT / ".kit_sent_log.json"
 
 # Kit API Configuration
@@ -253,7 +254,7 @@ def render_template(template_path, variables):
 
 
 def build_newsletter_html(meta, body, template_path):
-    """Build HTML email content from markdown."""
+    """Build HTML email content from markdown using email.html template."""
     content_html = convert_markdown_to_html(body)
     
     variables = {
@@ -264,7 +265,7 @@ def build_newsletter_html(meta, body, template_path):
         "unsubscribe_url": "{{ unsubscribe_url }}",
     }
     
-    return render_template(template_path, variables)
+    return render_template(EMAIL_TEMPLATE, variables)
 
 
 def build_blog_html(meta, body, template_path):

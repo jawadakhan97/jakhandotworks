@@ -4,153 +4,62 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>First post - Blog Post</title>
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,opsz,wght@0,18..144,300..900;1,18..144,300..900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
-    
-    <style>
-        /* Blog post styles based on existing CSS */
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Merriweather', Georgia, serif;
-            line-height: 1.6;
-            color: #333;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        
-        .blog-container {
-            padding: 2em;
-            background-color: #fff;
-        }
-        
-        .blog-header {
-            border-bottom: 1px solid #ddd;
-            padding-bottom: 1em;
-            margin-bottom: 2em;
-        }
-        
-        .blog-title {
-            font-family: 'Playfair Display', Georgia, serif;
-            font-size: 2em;
-            line-height: 1.2;
-            margin: 0;
-            color: #1a1a1a;
-        }
-        
-        .blog-meta {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 0.85em;
-            color: #666;
-            margin-top: 0.5em;
-        }
-        
-        .blog-content {
-            font-size: 1em;
-            line-height: 1.7;
-        }
-        
-        .blog-content h1 {
-            font-family: 'Playfair Display', Georgia, serif;
-            font-size: 1.5em;
-            margin-top: 1.5em;
-            margin-bottom: 0.75em;
-            color: #1a1a1a;
-        }
-        
-        .blog-content h2 {
-            font-family: 'Playfair Display', Georgia, serif;
-            font-size: 1.3em;
-            margin-top: 1.25em;
-            margin-bottom: 0.5em;
-            color: #2a2a2a;
-        }
-        
-        .blog-content h3 {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 1.1em;
-            font-weight: 600;
-            margin-top: 1em;
-            margin-bottom: 0.5em;
-        }
-        
-        .blog-content p {
-            margin: 1em 0;
-        }
-        
-        .blog-content ul,
-        .blog-content ol {
-            margin: 1em 0;
-            padding-left: 1.5em;
-        }
-        
-        .blog-content li {
-            margin: 0.5em 0;
-        }
-        
-        .blog-content blockquote {
-            border-left: 3px solid #333;
-            margin: 1.5em 0;
-            padding-left: 1em;
-            font-style: italic;
-            color: #555;
-        }
-        
-        .blog-content a {
-            color: #0066cc;
-            text-decoration: underline;
-        }
-        
-        .blog-content img {
-            max-width: 100%;
-            height: auto;
-            display: block;
-            margin: 1em 0;
-        }
-        
-        .blog-footer {
-            border-top: 1px solid #ddd;
-            margin-top: 2em;
-            padding-top: 1em;
-            font-family: 'Montserrat', sans-serif;
-            font-size: 0.75em;
-            color: #888;
-        }
-        
-        .blog-tags {
-            margin-bottom: 1em;
-        }
-        
-        .blog-tag {
-            display: inline-block;
-            background-color: #f0f0f0;
-            padding: 0.25em 0.75em;
-            border-radius: 3px;
-            margin-right: 0.5em;
-            font-size: 0.85em;
-        }
-    </style>
+    <link rel="stylesheet" href="../../assets/css/style.css">
 </head>
 <body>
-    <div class="blog-container">
-        <header class="blog-header">
-            <h1 class="blog-title">First post</h1>
-            <div class="blog-meta">
-                Published on {{ date }}
+    <header>
+        <h1>
+            <a href="../../index.html" style="text-decoration: none; color: inherit;">Jawad A. Khan</a>
+            <span class="subtitle">Narrative Designer</span>
+        </h1>
+        <nav class="navbar">
+            <a href="../../index.html">Home</a> |
+            <a href="../../about/index.html">About</a> |
+            <a href="../../works/index.html">Works</a> |
+            <a href="../../research-log/index.html">Research Log</a>
+        </nav>
+    </header>
+
+    <main>
+        <article class="blog-post">
+            <header class="post-header">
+                <h1 class="post-title">First post</h1>
+                <div class="post-meta">
+                    Published on {{ date }}
+                </div>
+            </header>
+            
+            <div class="post-content">
+                <p>This is a test post.</p>
             </div>
-        </header>
-        
-        <main class="blog-content">
-            <p>This is a test post.</p>
-        </main>
-        
-        <footer class="blog-footer">
             
-            
-            <p>&copy; 2026 Jawad A. Khan</p>
-        </footer>
-    </div>
+            <footer class="post-footer">
+                
+            </footer>
+        </article>
+    </main>
+
+    <footer>
+        <div class="kit-form-container">
+            <script async data-uid="65ecf604e1" src="https://jawadzai.kit.com/65ecf604e1/index.js"></script>
+        </div>
+
+        <p>&copy; 2026 Jawad A. Khan | <a href="https://github.com/jawadakhan97/jakhandotworks">Source Code</a></p>
+
+        <div class="footer-webring">
+            <a href="https://webring.jaydenpb.net/" target="_blank">
+                <div class="webring-logo">
+                    <img src="https://webring.jaydenpb.net/img/cntower.svg" alt="CS Webring" />
+                    <p>
+                    TOR GDC RING
+                    </p>
+                </div>
+            </a>
+            <div class="nav">
+                <a href="https://webring.jaydenpb.net/#jakhan.ca?nav=prev">←</a>
+                <a href="https://webring.jaydenpb.net/#jakhan.ca?nav=next">→</a>
+            </div>
+        </div>
+    </footer>
 </body>
 </html>
