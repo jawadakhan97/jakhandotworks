@@ -247,10 +247,8 @@ def render_simple_template(template_text, variables):
     return result
 
 
-def generate_listing_html(posts, content_type, title):
-    """Generate HTML listing page using the site's default styling."""
-    year = datetime.now().year
-    
+def generate_listing_items_html(posts, content_type):
+    """Generate the HTML list items for a listing page."""
     if content_type == "newsletter":
         item_label = "Issue"
     else:
@@ -259,76 +257,75 @@ def generate_listing_html(posts, content_type, title):
     items_html = ""
     for post in posts:
         date_str = f" — {post['date']}" if post['date'] else ""
-        rel_path = post['slug_with_num'] + "/index.html"
+        rel_path = "../" + post['slug_with_num'] + "/index.html"
         items_html += f'''
         <li class="listing-item">
             <a href="{rel_path}">{esc(post['title'])}</a>
             <span class="listing-meta">{item_label} #{post['number']}{date_str}</span>
         </li>'''
     
-    intro_text = f"Below are all the {content_type}s I've published."
-    if content_type == "newsletter":
-        intro_text += " Subscribe to receive future newsletters directly in your inbox."
+    return items_html
+
+
+def build_listing_page(source_path, posts, content_type):
+    """Build a listing page by reading the index.md and injecting the listings."""
+    raw_yaml, body, has_front = split_front_matter(
+        source_path.read_text(encoding="utf-8")
+    )
     
-    # Use the same structure as default.html template
-    listing_html = f'''<!doctype html>
-<html lang="en">
-    <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-        <title>{esc(title)} Archive</title>
-
-        <link rel="stylesheet" href="../assets/css/style.css" />
-    </head>
-
-    <body>
-        <header>
-            <h1>
-                <a href="../index.html" style="text-decoration: none; color: inherit;">Jawad A. Khan</a>
-                <span class="subtitle">Narrative Designer</span>
-            </h1>
-            <nav class="navbar">
-                <a href="../index.html">Home</a> |
-                <a href="../about/index.html">About</a> |
-                <a href="../works/index.html">Works</a> |
-                <a href="../research-log/index.html">Research Log</a>
-            </nav>
-        </header>
-
-        <main>
-            <h1>{esc(title)} Archive</h1>
-            <p class="intro">{intro_text}</p>
-            <ul class="listing">{items_html}
-            </ul>
-        </main>
-
-        <footer>
-            <div class="kit-form-container">
-                <script async data-uid="65ecf604e1" src="https://jawadzai.kit.com/65ecf604e1/index.js"></script>
-            </div>
-
-            <p>&copy; {year} Jawad A. Khan | <a href="https://github.com/jawadakhan97/jakhandotworks">Source Code</a></p>
-
-            <div class="footer-webring">
-                <a href="https://webring.jaydenpb.net/" target="_blank">
-                    <div class="webring-logo">
-                        <img src="https://webring.jaydenpb.net/img/cntower.svg" alt="CS Webring" />
-                        <p>
-                        TOR GDC RING
-                        </p>
-                    </div>
-                </a>
-                <div class="nav">
-                    <a href="https://webring.jaydenpb.net/#jakhan.ca?nav=prev">←</a>
-                    <a href="https://webring.jaydenpb.net/#jakhan.ca?nav=next">→</a>
-                </div>
-            </div>
-        </footer>
-    </body>
-</html>'''
+    meta = {}
+    if has_front:
+        try:
+            meta = yaml.safe_load(raw_yaml) or {}
+        except yaml.YAMLError:
+            meta = {}
     
-    return listing_html
+    # Generate the list items
+    items_html = generate_listing_items_html(posts, content_type)
+    
+    # Find the LISTING_START marker and inject items after it
+    listing_marker = "<!-- LISTING_START -->"
+    if listing_marker in body:
+        body = body.replace(listing_marker, listing_marker + "\n\n<ul class=\"listing\">" + items_html + "\n</ul>")
+    
+    # Build full markdown with front matter
+    full_markdown = f"---\n{raw_yaml}\n---\n{body}"
+    
+    # Use pandoc to render with the default template
+    out_rel = get_out_rel(source_path)
+    out_path = PUBLIC / out_rel
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    
+    root_url = get_root_prefix(out_rel)
+    
+    cmd = [
+        "pandoc",
+        "-f",
+        "markdown+yaml_metadata_block+raw_html",
+        "-t",
+        "html5",
+        "--standalone",
+        "--template",
+        str(DEFAULT_TEMPLATE),
+        "-V",
+        f"root_url={root_url}",
+        "-o",
+        str(out_path),
+    ]
+    
+    proc = subprocess.run(
+        cmd, input=full_markdown.encode("utf-8"), capture_output=True
+    )
+    
+    if proc.returncode != 0:
+        print(
+            f"Error building {source_path}:\n{proc.stderr.decode('utf-8')}",
+            file=sys.stderr,
+        )
+        return None
+    else:
+        print(f"  -> {out_path.relative_to(ROOT)}")
+        return out_path
 
 
 def build_project_index():
@@ -650,19 +647,15 @@ def build_site():
     else:
         print(f"No new blog posts (total: {len(blog_posts)} already processed)")
 
-    # Generate newsletter listing
-    newsletter_html = generate_listing_html(newsletters, "newsletter", "Newsletter")
-    newsletter_output = PUBLIC / "newsletter" / "index.html"
-    newsletter_output.parent.mkdir(parents=True, exist_ok=True)
-    newsletter_output.write_text(newsletter_html, encoding="utf-8")
-    print(f"\nGenerated listing: {newsletter_output}")
-
-    # Generate blog listing
-    blog_html = generate_listing_html(blog_posts, "blog", "Blog")
-    blog_output = PUBLIC / "blog" / "index.html"
-    blog_output.parent.mkdir(parents=True, exist_ok=True)
-    blog_output.write_text(blog_html, encoding="utf-8")
-    print(f"Generated listing: {blog_output}")
+    # Build newsletter listing page from index.md
+    newsletter_index_path = NEWSLETTER_DIR / "index.md"
+    if newsletter_index_path.exists():
+        build_listing_page(newsletter_index_path, newsletters, "newsletter")
+    
+    # Build blog listing page from index.md
+    blog_index_path = BLOG_DIR / "index.md"
+    if blog_index_path.exists():
+        build_listing_page(blog_index_path, blog_posts, "blog")
 
     # Update state
     state["newsletter"] = newsletter_ids
