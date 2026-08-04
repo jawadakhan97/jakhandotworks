@@ -1,3 +1,1 @@
-(public/blog/index.html, public/newsletter/index.html) are source/config files, and there are no build artifacts, dependencies, or temp files in the changes.
-
-(empty — output nothing)
+(public/newsletter/index.html, tools/build.py)

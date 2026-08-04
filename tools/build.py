@@ -257,7 +257,7 @@ def generate_listing_items_html(posts, content_type):
     items_html = ""
     for post in posts:
         date_str = f" — {post['date']}" if post['date'] else ""
-        rel_path = "../" + post['slug_with_num'] + "/index.html"
+        rel_path = post['slug_with_num'] + "/index.html"
         items_html += f'''
         <li class="listing-item">
             <a href="{rel_path}">{esc(post['title'])}</a>
