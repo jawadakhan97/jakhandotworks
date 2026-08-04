@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Georgia, serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #f4f4f4;
+        }
+        .email-container {
+            background-color: #ffffff;
+            padding: 2em;
+        }
+        .email-header {
+            border-bottom: 2px solid #333;
+            padding-bottom: 1em;
+            margin-bottom: 1.5em;
+        }
+        .email-title {
+            font-size: 1.8em;
+            line-height: 1.2;
+            margin: 0;
+            color: #1a1a1a;
+        }
+        .email-meta {
+            font-size: 0.85em;
+            color: #666;
+            margin-top: 0.5em;
+        }
+        .email-content {
+            font-size: 1em;
+            line-height: 1.7;
+        }
+        .email-content h1 {
+            font-size: 1.5em;
+            margin-top: 1.5em;
+            margin-bottom: 0.75em;
+            color: #1a1a1a;
+        }
+        .email-content h2 {
+            font-size: 1.3em;
+            margin-top: 1.25em;
+            margin-bottom: 0.5em;
+            color: #2a2a2a;
+        }
+        .email-content p {
+            margin: 1em 0;
+        }
+        .email-content a {
+            color: #0066cc;
+        }
+        .email-footer {
+            border-top: 1px solid #ddd;
+            margin-top: 2em;
+            padding-top: 1em;
+            font-size: 0.75em;
+            color: #888;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <header class="email-header">
+            <h1 class="email-title">{{ title }}</h1>
+            <div class="email-meta">{{ date }}</div>
+        </header>
+        
+        <main class="email-content">
+            {{ content }}
+        </main>
+        
+        <footer class="email-footer">
+            <p>&copy; {{ year }} Jawad A. Khan</p>
+            <p>You're receiving this because you subscribed to the newsletter.</p>
+            <p><a href="{{ unsubscribe_url }}">Unsubscribe</a></p>
+        </footer>
+    </div>
+</body>
+</html>

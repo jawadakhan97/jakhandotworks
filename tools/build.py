@@ -228,18 +228,24 @@ def render_simple_template(template_text, variables):
     
     result = if_cond_pattern.sub(replace_if, result)
     
-    # Then replace simple {{ variable }} patterns
-    for key, value in variables.items():
-        if isinstance(value, str):
-            result = result.replace("{{ " + key + " }}", value)
-        elif isinstance(value, int):
-            result = result.replace("{{ " + key + " }}", str(value))
+    # Replace {{ variable }} patterns with regex to handle spacing
+    var_pattern = re.compile(r"\{\{\s*(\w+)\s*\}\}")
+    
+    def replace_var(match):
+        var_name = match.group(1)
+        if var_name in variables:
+            value = variables[var_name]
+            if isinstance(value, (str, int)):
+                return str(value)
+        return match.group(0)  # Keep original if not found
+    
+    result = var_pattern.sub(replace_var, result)
     
     return result
 
 
 def generate_listing_html(posts, content_type, title):
-    """Generate HTML listing page using minimal styling."""
+    """Generate HTML listing page using the site's default styling."""
     year = datetime.now().year
     
     if content_type == "newsletter":
@@ -250,7 +256,6 @@ def generate_listing_html(posts, content_type, title):
     items_html = ""
     for post in posts:
         date_str = f" — {post['date']}" if post['date'] else ""
-        # Generate relative path: from public/newsletter/index.html to public/newsletter/1_*/index.html
         rel_path = post['slug_with_num'] + "/index.html"
         items_html += f'''
         <li class="listing-item">
@@ -262,22 +267,62 @@ def generate_listing_html(posts, content_type, title):
     if content_type == "newsletter":
         intro_text += " Subscribe to receive future newsletters directly in your inbox."
     
-    listing_html = f'''<!DOCTYPE html>
+    # Use the same structure as default.html template
+    listing_html = f'''<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{esc(title)} Archive</title>
-</head>
-<body>
-    <h1>{esc(title)} Archive</h1>
-    <p class="intro">{intro_text}</p>
-    <ul class="listing">{items_html}
-    </ul>
-    <footer>
-        <p>&copy; {year} Jawad A. Khan</p>
-    </footer>
-</body>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+        <title>{esc(title)} Archive</title>
+
+        <link rel="stylesheet" href="../assets/css/style.css" />
+    </head>
+
+    <body>
+        <header>
+            <h1>
+                <a href="../index.html" style="text-decoration: none; color: inherit;">Jawad A. Khan</a>
+                <span class="subtitle">Narrative Designer</span>
+            </h1>
+            <nav class="navbar">
+                <a href="../index.html">Home</a> |
+                <a href="../about/index.html">About</a> |
+                <a href="../works/index.html">Works</a> |
+                <a href="../research-log/index.html">Research Log</a>
+            </nav>
+        </header>
+
+        <main>
+            <h1>{esc(title)} Archive</h1>
+            <p class="intro">{intro_text}</p>
+            <ul class="listing">{items_html}
+            </ul>
+        </main>
+
+        <footer>
+            <div class="kit-form-container">
+                <script async data-uid="65ecf604e1" src="https://jawadzai.kit.com/65ecf604e1/index.js"></script>
+            </div>
+
+            <p>&copy; {year} Jawad A. Khan | <a href="https://github.com/jawadakhan97/jakhandotworks">Source Code</a></p>
+
+            <div class="footer-webring">
+                <a href="https://webring.jaydenpb.net/" target="_blank">
+                    <div class="webring-logo">
+                        <img src="https://webring.jaydenpb.net/img/cntower.svg" alt="CS Webring" />
+                        <p>
+                        TOR GDC RING
+                        </p>
+                    </div>
+                </a>
+                <div class="nav">
+                    <a href="https://webring.jaydenpb.net/#jakhan.ca?nav=prev">←</a>
+                    <a href="https://webring.jaydenpb.net/#jakhan.ca?nav=next">→</a>
+                </div>
+            </div>
+        </footer>
+    </body>
 </html>'''
     
     return listing_html
