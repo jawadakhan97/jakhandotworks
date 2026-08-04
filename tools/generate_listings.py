@@ -2,8 +2,10 @@
 """
 Generate listing pages for newsletter and blog archives.
 Scans content directories and creates index.html files with links to all posts.
+Tracks which posts have been processed to avoid re-reporting the same items.
 """
 
+import json
 import re
 from pathlib import Path
 from datetime import datetime
@@ -19,6 +21,22 @@ CONTENT_DIR = ROOT / "src" / "content"
 NEWSLETTER_DIR = CONTENT_DIR / "newsletter"
 BLOG_DIR = CONTENT_DIR / "blog"
 PUBLIC_DIR = ROOT / "public"
+STATE_FILE = ROOT / "tools" / ".listings_state.json"
+
+
+def load_state():
+    """Load the state file tracking processed posts."""
+    if STATE_FILE.exists():
+        try:
+            return json.loads(STATE_FILE.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, IOError):
+            pass
+    return {"newsletter": [], "blog": []}
+
+
+def save_state(state):
+    """Save the state file."""
+    STATE_FILE.write_text(json.dumps(state, indent=2), encoding="utf-8")
 
 
 def parse_front_matter(md_path):
@@ -70,9 +88,9 @@ def scan_content_directory(directory, content_type):
             posts.append({
                 "number": issue_num,
                 "slug": slug,
+                "slug_with_num": f"{issue_num}_{slug}",
                 "title": title,
                 "date": date,
-                "path": f"/{content_type}/{issue_num}_{slug}/",
             })
     
     # Sort by number
@@ -80,7 +98,7 @@ def scan_content_directory(directory, content_type):
     return posts
 
 
-def generate_listing_html(posts, content_type, title):
+def generate_listing_html(posts, content_type, title, output_depth):
     """Generate HTML listing page."""
     year = datetime.now().year
     
@@ -92,9 +110,11 @@ def generate_listing_html(posts, content_type, title):
     items_html = ""
     for post in posts:
         date_str = f" — {post['date']}" if post['date'] else ""
+        # Generate relative path based on output depth
+        rel_path = "../" * output_depth + post['slug_with_num']
         items_html += f'''
         <li class="listing-item">
-            <a href="{post['path']}">{post['title']}</a>
+            <a href="{rel_path}/">{post['title']}</a>
             <span class="listing-meta">{item_label} #{post['number']}{date_str}</span>
         </li>'''
     
@@ -182,27 +202,57 @@ def generate_listing_html(posts, content_type, title):
 
 
 def main():
+    # Load previous state
+    state = load_state()
+    
     # Scan newsletters
     newsletters = scan_content_directory(NEWSLETTER_DIR, "newsletter")
-    print(f"Found {len(newsletters)} newsletter(s)")
+    newsletter_ids = [f"{p['number']}_{p['slug']}" for p in newsletters]
     
     # Scan blog posts
     blog_posts = scan_content_directory(BLOG_DIR, "blog")
-    print(f"Found {len(blog_posts)} blog post(s)")
+    blog_ids = [f"{p['number']}_{p['slug']}" for p in blog_posts]
     
-    # Generate newsletter listing
-    newsletter_html = generate_listing_html(newsletters, "newsletter", "Newsletter")
+    # Determine new items
+    new_newsletters = [n for n in newsletters if f"{n['number']}_{n['slug']}" not in state["newsletter"]]
+    new_blog_posts = [b for b in blog_posts if f"{b['number']}_{b['slug']}" not in state["blog"]]
+    
+    # Report findings
+    total_newsletters = len(newsletters)
+    total_blog_posts = len(blog_posts)
+    
+    if new_newsletters:
+        print(f"Found {len(new_newsletters)} new newsletter(s) (total: {total_newsletters})")
+        for n in new_newsletters:
+            print(f"  - {n['title']}")
+    else:
+        print(f"No new newsletters (total: {total_newsletters} already processed)")
+    
+    if new_blog_posts:
+        print(f"Found {len(new_blog_posts)} new blog post(s) (total: {total_blog_posts})")
+        for b in new_blog_posts:
+            print(f"  - {b['title']}")
+    else:
+        print(f"No new blog posts (total: {total_blog_posts} already processed)")
+    
+    # Generate newsletter listing (output_depth=1 since public/newsletter/index.html links to public/newsletter/1_*/index.html)
+    newsletter_html = generate_listing_html(newsletters, "newsletter", "Newsletter", output_depth=1)
     newsletter_output = PUBLIC_DIR / "newsletter" / "index.html"
     newsletter_output.parent.mkdir(parents=True, exist_ok=True)
     newsletter_output.write_text(newsletter_html, encoding="utf-8")
     print(f"Generated: {newsletter_output}")
     
-    # Generate blog listing
-    blog_html = generate_listing_html(blog_posts, "blog", "Blog")
+    # Generate blog listing (output_depth=1 since public/blog/index.html links to public/blog/1_*/index.html)
+    blog_html = generate_listing_html(blog_posts, "blog", "Blog", output_depth=1)
     blog_output = PUBLIC_DIR / "blog" / "index.html"
     blog_output.parent.mkdir(parents=True, exist_ok=True)
     blog_output.write_text(blog_html, encoding="utf-8")
     print(f"Generated: {blog_output}")
+    
+    # Update state with all current posts
+    state["newsletter"] = newsletter_ids
+    state["blog"] = blog_ids
+    save_state(state)
     
     print("\nListing pages generated successfully!")
 
